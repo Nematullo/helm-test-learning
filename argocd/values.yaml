@@ -1,0 +1,6 @@
+server:
+  service:
+    type: NodePort
+configs:
+  cm:
+    application.instanceLabelKey: argocd.argoproj.io/instance

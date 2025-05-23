@@ -1,0 +1,347 @@
+  # Copyright Broadcom, Inc. All Rights Reserved.
+  # SPDX-License-Identifier: APACHE-2.0
+
+  fullnameOverride: "my-redis-neo"
+  ## @param namespaceOverride Строка для полного переопределения common.names.namespace
+  ##
+  architecture: replication
+
+  auth:
+    enabled: false  # если хочешь без пароля (для локальных тестов)
+
+
+
+  replica:
+    replicaCount: 1
+    service:
+      type: NodePort
+      nodePorts:
+        redis: "30081"  # порт реплики
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "200m"
+
+
+  master:
+    service:
+    type: NodePort
+    port: "6379"
+    nodePorts:
+      redis: "30079"  # порт мастера
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "200m"
+
+
+
+
+
+
+  ## @section Глобальные параметры
+  ## Глобальные параметры Docker-образа
+  ## Пожалуйста, обратите внимание, что это переопределит параметры образа, включая зависимости, настроенные на использование глобального значения
+  ## Доступные глобальные параметры Docker-образа: imageRegistry, imagePullSecrets и storageClass
+  ##
+
+  ## @param global.imageRegistry Глобальный реестр Docker-образов
+  ## @param global.imagePullSecrets Глобальные имена секретов реестра Docker в виде массива
+  ## @param global.defaultStorageClass Глобальный StorageClass по умолчанию для постоянных томов (Persistent Volume)
+  ## @param global.storageClass УСТАРЕЛО: используйте global.defaultStorageClass вместо этого
+  ## @param global.redis.password Глобальный пароль Redis(R) (переопределяет `auth.password`)
+  ##
+  global:
+    imageRegistry: ""
+    ## Например:
+    ## imagePullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    imagePullSecrets: []
+    defaultStorageClass: ""
+    storageClass: ""
+    ## Параметры безопасности
+    ##
+    security:
+      ## @param global.security.allowInsecureImages Разрешить пропуск проверки образа
+      allowInsecureImages: false
+    redis:
+      password: ""
+    ## Адаптации совместимости для платформ Kubernetes
+    ##
+    compatibility:
+      ## Адаптации совместимости для Openshift
+      ##
+      openshift:
+        ## @param global.compatibility.openshift.adaptSecurityContext Адаптировать секции securityContext в деплойменте для совместимости с Openshift restricted-v2 SCC: удалить runAsUser, runAsGroup и fsGroup и позволить платформе использовать свои разрешённые значения по умолчанию. Возможные значения: auto (применять, если обнаружен Openshift), force (всегда выполнять адаптацию), disabled (не выполнять адаптацию)
+        ##
+        adaptSecurityContext: auto
+  ## @section Общие параметры
+  ##
+
+  ## @param kubeVersion Переопределить версию Kubernetes
+  ##
+  kubeVersion: ""
+  ## @param nameOverride Строка для частичного переопределения common.names.fullname
+  ##
+  nameOverride: ""
+  ## @param fullnameOverride Строка для полного переопределения common.names.fullname
+  ##
+
+  namespaceOverride: ""
+  ## @param commonLabels Метки для добавления ко всем развёрнутым объектам
+  ##
+  commonLabels: {}
+  ## @param commonAnnotations Аннотации для добавления ко всем развёрнутым объектам
+  ##
+  commonAnnotations: {}
+  ## @param configmapChecksumAnnotations Включить аннотации контрольной суммы, используемые для запуска rolling update при изменении ConfigMap(ов)
+  ##
+  configmapChecksumAnnotations: true
+  ## @param secretChecksumAnnotations Включить аннотации контрольной суммы, используемые для запуска rolling update при изменении Secret(ов)
+  ##
+  secretChecksumAnnotations: true
+  ## @param secretAnnotations Аннотации для добавления к секрету
+  ##
+  secretAnnotations: {}
+  ## @param clusterDomain Имя домена кластера Kubernetes
+  ##
+  clusterDomain: cluster.local
+  ## @param extraDeploy Массив дополнительных объектов для развёртывания вместе с релизом
+  ##
+  extraDeploy: []
+  ## @param useHostnames Использовать имена хостов внутри кластера при объявлении репликации. Если false, имя хоста будет разрешено в IP-адрес
+  ##
+  useHostnames: true
+  ## @param nameResolutionThreshold Порог отказа для внутреннего разрешения имён хостов
+  ##
+  nameResolutionThreshold: 5
+  ## @param nameResolutionTimeout Таймаут (в секундах) между проверками внутреннего разрешения имён хостов
+  ##
+  nameResolutionTimeout: 5
+  ## Включить диагностический режим в деплойменте
+  ##
+  diagnosticMode:
+    ## @param diagnosticMode.enabled Включить диагностический режим (все проверки будут отключены и команда будет переопределена)
+    ##
+    enabled: false
+    ## @param diagnosticMode.command Команда для переопределения всех контейнеров в деплойменте
+    ##
+    command:
+      - sleep
+    ## @param diagnosticMode.args Аргументы для переопределения всех контейнеров в деплойменте
+    ##
+    args:
+      - infinity
+
+  ## @section Параметры образа Redis(R)
+  ##
+
+  ## Образ Bitnami Redis(R)
+  ## см.: https://hub.docker.com/r/bitnami/redis/tags/
+  ## @param image.registry [по умолчанию: REGISTRY_NAME] Реестр образа Redis(R)
+  ## @param image.repository [по умолчанию: REPOSITORY_NAME/redis] Репозиторий образа Redis(R)
+  ## @skip image.tag Тег образа Redis(R) (рекомендуются неизменяемые теги)
+  ## @param image.digest Дайджест образа Redis(R) в формате sha256:aa.... Обратите внимание, что этот параметр, если установлен, переопределяет тег
+  ## @param image.pullPolicy Политика извлечения образа Redis(R)
+  ## @param image.pullSecrets Секреты для извлечения образа Redis(R)
+  ## @param image.debug Включить режим отладки образа
+  ##
+  image:
+    registry: docker.io
+    repository: bitnami/redis
+    tag: 8.0.1-debian-12-r2
+    digest: ""
+    ## Указать imagePullPolicy
+    ## см.: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
+    ##
+    pullPolicy: IfNotPresent
+    ## При необходимости укажите массив imagePullSecrets.
+    ## Секреты должны быть созданы вручную в пространстве имён.
+    ## см.: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## например:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+    ## Включить режим отладки
+    ##
+    debug: false
+  ## @section Общие параметры конфигурации Redis(R)
+  ## https://github.com/bitnami/containers/tree/main/bitnami/redis#configuration
+  ##
+
+  ## @param architecture Архитектура Redis(R). Допустимые значения: `standalone` или `replication`
+  ##
+  architecture: replication
+  ## Параметры аутентификации Redis(R)
+  ## см.: https://github.com/bitnami/containers/tree/main/bitnami/redis#setting-the-server-password-on-first-run
+  ##
+  auth:
+    ## @param auth.enabled Включить аутентификацию по паролю
+    ##
+    enabled: true
+    ## @param auth.sentinel Включить аутентификацию и для sentinel-ов
+    ##
+    sentinel: true
+    ## @param auth.password Пароль Redis(R)
+    ## По умолчанию генерируется случайная 10-символьная строка, если не задано
+    ##
+    password: "11221122"
+    ## @param auth.existingSecret Имя существующего секрета с учётными данными Redis(R)
+    ## ПРИМЕЧАНИЕ: если задано, предыдущий параметр `auth.password` игнорируется
+    ##
+    existingSecret: ""
+    ## @param auth.existingSecretPasswordKey Ключ пароля, который будет получен из существующего секрета
+    ## ПРИМЕЧАНИЕ: игнорируется, если не задан параметр `auth.existingSecret`
+    ##
+    existingSecretPasswordKey: ""
+    ## @param auth.usePasswordFiles Монтировать учётные данные как файлы вместо использования переменной окружения
+    ##
+    usePasswordFiles: true
+    ## @param auth.usePasswordFileFromSecret Монтировать файл пароля из секрета
+    ##
+    usePasswordFileFromSecret: true
+    ## Redis ACL ограничивает соединения, ограничивая команды и доступ к ключам с помощью управления auth.
+    ## см.: https://redis.io/docs/latest/operate/oss_and_stack/management/security/acl/
+    ##
+    acl:
+      ## @param auth.acl.enabled Включить поддержку системы ACL Redis
+      ##
+      enabled: false
+      ## @param auth.acl.sentinel Включить поддержку системы ACL Redis для Sentinel-нод
+      ##
+      sentinel: false
+      ## @param auth.acl.users Список настроенных пользователей в системе ACL Redis
+      ##
+      ## Пример:
+      ## users:
+      ##   - username: "my-user"
+      ##     password: "mypassword"
+      ##     enabled: "on"
+      ##     commands: "+@all"
+      ##     keys: "~*"
+      ##     channels: "&*"
+      users: []
+      ## @param auth.acl.userSecret Имя секрета, содержащего учётные данные пользователей ACL. Ключи должны совпадать с именами пользователей.
+      userSecret: ""
+  ## @param commonConfiguration [строка] Общая конфигурация, добавляемая в ConfigMap
+  ## см.: https://redis.io/topics/config
+  ##
+  commonConfiguration: |-
+    # Включить AOF https://redis.io/topics/persistence#append-only-file
+    appendonly yes
+    # Отключить RDB-персистентность, AOF уже включён.
+    save ""
+  ## @param existingConfigmap Имя существующего ConfigMap с вашей пользовательской конфигурацией для нод Redis(R)
+  ##
+  existingConfigmap: ""
+  ## @section Параметры конфигурации мастера Redis(R)
+  ##
+  master:
+    ## @param master.count Количество экземпляров мастера Redis(R) для развёртывания (экспериментально, требует дополнительной настройки)
+    ##
+    count: 1
+    ## @param master.revisionHistoryLimit Количество старых историй для хранения, чтобы разрешить откат
+    ## ПРИМЕЧАНИЕ: явная установка этого поля в 0 приведёт к удалению всей истории, что нарушит возможность отката
+    revisionHistoryLimit: 10
+    ## @param master.configuration Конфигурация для мастер-нод Redis(R)
+    ## см.: https://redis.io/topics/config
+    ##
+    configuration: ""
+    ## @param master.disableCommands Массив команд Redis(R), которые будут отключены на мастер-нодах
+    ## Команды будут полностью отключены путём переименования каждой в пустую строку.
+    ## см.: https://redis.io/topics/security#disabling-of-specific-commands
+    ##
+    disableCommands:
+      - FLUSHDB
+      - FLUSHALL
+    ## @param master.command Переопределить команду контейнера по умолчанию (полезно при использовании пользовательских образов)
+    ##
+    command: []
+    ## @param master.args Переопределить аргументы контейнера по умолчанию (полезно при использовании пользовательских образов)
+    ##
+    args: []
+    ## @param master.enableServiceLinks Вставлять ли информацию о сервисах в переменные окружения pod-а
+    ##
+    enableServiceLinks: true
+    ## @param master.preExecCmds Дополнительные команды для выполнения перед запуском мастера Redis(R)
+    ##
+    preExecCmds: []
+    ## @param master.extraFlags Массив дополнительных флагов командной строки для мастера Redis(R)
+    ## например:
+    ## extraFlags:
+    ##  - "--maxmemory-policy volatile-ttl"
+    ##  - "--repl-backlog-size 1024mb"
+    ##
+    extraFlags: []
+    ## @param master.extraEnvVars Массив дополнительных переменных окружения для мастер-нод Redis(R)
+    ## например:
+    ## extraEnvVars:
+    ##   - name: FOO
+    ##     value: "bar"
+    ##
+    extraEnvVars: []
+    ## @param master.extraEnvVarsCM Имя существующего ConfigMap, содержащего дополнительные переменные окружения для мастер-нод Redis(R)
+    ##
+    extraEnvVarsCM: ""
+    ## @param master.extraEnvVarsSecret Имя существующего Secret, содержащего дополнительные переменные окружения для мастер-нод Redis(R)
+    ##
+    extraEnvVarsSecret: ""
+    ## @param master.containerPorts.redis Порт контейнера, открываемый на мастер-нодах Redis(R)
+    ##
+    containerPorts:
+      redis: 6379
+    ## Настроить дополнительные параметры для liveness и readiness probes контейнеров Redis(R)
+    ## см.: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+    ## @param master.startupProbe.enabled Включить startupProbe на мастер-нодах Redis(R)
+    ## @param master.startupProbe.initialDelaySeconds Задержка перед запуском startupProbe
+    ## @param master.startupProbe.periodSeconds Периодичность запуска startupProbe
+    ## @param master.startupProbe.timeoutSeconds Таймаут для startupProbe
+    ## @param master.startupProbe.failureThreshold Порог отказа для startupProbe
+    ## @param master.startupProbe.successThreshold Порог успешности для startupProbe
+    ##
+    startupProbe:
+      enabled: false
+      initialDelaySeconds: 20
+      periodSeconds: 5
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 5
+    ## @param master.livenessProbe.enabled Включить livenessProbe на мастер-нодах Redis(R)
+    ## @param master.livenessProbe.initialDelaySeconds Задержка перед запуском livenessProbe
+    ## @param master.livenessProbe.periodSeconds Периодичность запуска livenessProbe
+    ## @param master.livenessProbe.timeoutSeconds Таймаут для livenessProbe
+    ## @param master.livenessProbe.failureThreshold Порог отказа для livenessProbe
+    ## @param master.livenessProbe.successThreshold Порог успешности для livenessProbe
+    ##
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 20
+      periodSeconds: 5
+      timeoutSeconds: 5
+      successThreshold: 1
+      failureThreshold: 5
+    ## @param master.readinessProbe.enabled Включить readinessProbe на мастер-нодах Redis(R)
+    ## @param master.readinessProbe.initialDelaySeconds Задержка перед запуском readinessProbe
+    ## @param master.readinessProbe.periodSeconds Периодичность запуска readinessProbe
+    ## @param master.readinessProbe.timeoutSeconds Таймаут для readinessProbe
+    ## @param master.readinessProbe.failureThreshold Порог отказа для readinessProbe
+    ## @param master.readinessProbe.successThreshold Порог успешности для readinessProbe
+    ##
+    readinessProbe:
+      enabled: true
+      initialDelaySeconds: 20
+      periodSeconds: 5
+      timeoutSeconds: 1
+      successThreshold: 1
+      failureThreshold: 5
+    ## @param master.customStartupProbe Пользовательский startupProbe, переопределяющий стандартный
+    ##
+    customStartupProbe: {}

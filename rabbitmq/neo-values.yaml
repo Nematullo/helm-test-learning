@@ -1,0 +1,27 @@
+auth:
+  username: ad123456
+  password: ad123456
+  erlangCookie: secretcookievalue
+
+
+service:
+  type: NodePort
+  nodePorts:
+    amqp: 30010
+    manager: 30011
+    amqpTls: 30012
+    epmd: 30013
+    dist: 30014
+    metrics: 30015
+    management: 30016
+  ports:
+    amqp: 30020
+    manager: 30021
+    amqpTls: 30022
+    epmd: 30023
+    dist: 30024
+    metrics: 30025
+    management: 30026
+
+management:
+  enabled: true

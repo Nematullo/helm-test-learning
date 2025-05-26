@@ -1,0 +1,1632 @@
+# Copyright Broadcom, Inc. All Rights Reserved.
+# SPDX-License-Identifier: APACHE-2.0
+
+## @section Глобальные параметры
+## Глобальные параметры Docker-образа
+## Пожалуйста, обратите внимание, что это переопределит параметры образа, включая зависимости, настроенные на использование глобального значения
+## Доступные глобальные параметры Docker-образа: imageRegistry, imagePullSecrets и storageClass
+##
+
+## @param global.imageRegistry Глобальный реестр Docker-образов
+## @param global.imagePullSecrets Имена секретов Docker-реестра в виде массива
+## @param global.defaultStorageClass Глобальный StorageClass по умолчанию для постоянных томов
+## @param global.storageClass УСТАРЕЛО: используйте global.defaultStorageClass вместо этого
+##
+global:
+  imageRegistry: ""
+  ## Например:
+  ## imagePullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  imagePullSecrets: []
+  defaultStorageClass: ""
+  storageClass: ""
+  ## Параметры безопасности
+  ##
+  security:
+    ## @param global.security.allowInsecureImages Разрешить пропуск проверки образа
+    allowInsecureImages: false
+  ## Адаптации совместимости для платформ Kubernetes
+  ##
+  compatibility:
+    ## Адаптации совместимости для Openshift
+    ##
+    openshift:
+      ## @param global.compatibility.openshift.adaptSecurityContext Адаптировать секции securityContext для совместимости с Openshift restricted-v2 SCC: удалить runAsUser, runAsGroup и fsGroup и позволить платформе использовать их значения по умолчанию. Возможные значения: auto (применять, если обнаружен Openshift), force (всегда применять), disabled (не применять)
+      ##
+      adaptSecurityContext: auto
+## @section Параметры образа RabbitMQ
+## Версия образа Bitnami RabbitMQ
+## см.: https://hub.docker.com/r/bitnami/rabbitmq/tags/
+## @param image.registry [по умолчанию: REGISTRY_NAME] Реестр образа RabbitMQ
+## @param image.repository [по умолчанию: REPOSITORY_NAME/rabbitmq] Репозиторий образа RabbitMQ
+## @skip image.tag Тег образа RabbitMQ (рекомендуются неизменяемые теги)
+## @param image.digest Дайджест образа RabbitMQ в формате sha256:aa.... Обратите внимание, что этот параметр, если установлен, переопределяет тег
+## @param image.pullPolicy Политика извлечения образа RabbitMQ
+## @param image.pullSecrets Укажите имена секретов docker-реестра в виде массива
+## @param image.debug Установите true, если хотите видеть дополнительную информацию в логах
+##
+image:
+  registry: docker.io
+  repository: bitnami/rabbitmq
+  tag: 4.1.0-debian-12-r0
+  digest: ""
+  ## Установите true, если хотите видеть дополнительную информацию в логах
+  ## Включает отладку BASH и/или NAMI в образе
+  ##
+  debug: false
+  ## Укажите imagePullPolicy
+  ## см.: https://kubernetes.io/ru/docs/concepts/containers/images/#pre-pulled-images
+  ##
+  pullPolicy: IfNotPresent
+  ## При необходимости укажите массив imagePullSecrets.
+  ## Секреты должны быть созданы вручную в пространстве имён.
+  ## см.: https://kubernetes.io/ru/docs/tasks/configure-pod-container/pull-image-private-registry/
+  ## Пример:
+  ## pullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  pullSecrets: []
+## @section Общие параметры
+##
+
+## @param nameOverride Строка для частичного переопределения шаблона rabbitmq.fullname (сохраняет имя релиза)
+##
+nameOverride: ""
+## @param fullnameOverride Строка для полного переопределения шаблона rabbitmq.fullname
+##
+fullnameOverride: ""
+## @param namespaceOverride Строка для полного переопределения common.names.namespace
+##
+namespaceOverride: ""
+## @param kubeVersion Принудительно указать целевую версию Kubernetes (используется Helm capabilities, если не указано)
+##
+kubeVersion: ""
+## @param clusterDomain Домен кластера Kubernetes
+##
+clusterDomain: cluster.local
+## @param extraDeploy Массив дополнительных объектов для развертывания вместе с релизом
+##
+extraDeploy: []
+## @param commonAnnotations Аннотации, добавляемые ко всем развертываемым объектам
+##
+commonAnnotations: {}
+## @param servicenameOverride Строка для частичного переопределения имени headless-сервиса
+##
+servicenameOverride: ""
+## @param commonLabels Метки, добавляемые ко всем развертываемым объектам
+##
+commonLabels: {}
+## @param serviceBindings.enabled Создать секрет для service binding (Экспериментально)
+## см.: https://servicebinding.io/service-provider/
+##
+serviceBindings:
+  enabled: false
+## @param enableServiceLinks Следует ли внедрять информацию о сервисах в переменные окружения pod'а
+## Переменные окружения, внедряемые через service links, не используются, но могут привести к медленному запуску pod'ов или скриптов, если в пространстве имён много сервисов.
+## Если вы сталкиваетесь с медленным запуском pod'ов или скриптов, возможно, стоит установить это значение в `false`.
+##
+enableServiceLinks: true
+## @param usePasswordFiles Монтировать учетные данные как файлы вместо использования переменных окружения
+##
+usePasswordFiles: true
+## Включить диагностический режим в развертывании
+##
+diagnosticMode:
+  ## @param diagnosticMode.enabled Включить диагностический режим (все проверки будут отключены, а команда будет переопределена)
+  ##
+  enabled: false
+  ## @param diagnosticMode.command Команда для переопределения всех контейнеров в развертывании
+  ##
+  command:
+    - sleep
+  ## @param diagnosticMode.args Аргументы для переопределения всех контейнеров в развертывании
+  ##
+  args:
+    - infinity
+## @param automountServiceAccountToken Монтировать токен Service Account в pod
+##
+automountServiceAccountToken: true
+## @param hostAliases Хост-алиасы для pod'а в развертывании
+## https://kubernetes.io/ru/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+##
+hostAliases: []
+## @param dnsPolicy Политика DNS для pod'а
+## см.: https://kubernetes.io/ru/docs/concepts/services-networking/dns-pod-service/
+## Например:
+## dnsPolicy: ClusterFirst
+##
+dnsPolicy: ""
+## @param dnsConfig Конфигурация DNS для pod'а
+## см.: https://kubernetes.io/ru/docs/concepts/services-networking/dns-pod-service/
+## Например:
+## dnsConfig:
+##   options:
+##   - name: ndots
+##     value: "4"
+##
+dnsConfig: {}
+## Параметры аутентификации RabbitMQ
+##
+auth:
+  ## @param auth.username Имя пользователя приложения RabbitMQ
+  ## см.: https://github.com/bitnami/containers/tree/main/bitnami/rabbitmq#environment-variables
+  ##
+  username: user
+  ## @param auth.password Пароль приложения RabbitMQ
+  ## см.: https://github.com/bitnami/containers/tree/main/bitnami/rabbitmq#environment-variables
+  ##
+  password: ""
+  ## @param auth.securePassword Устанавливать ли пароль RabbitMQ безопасно. Несовместимо с загрузкой внешних определений RabbitMQ и 'true', если не установлен параметр auth.password.
+  ## см.: https://github.com/bitnami/containers/tree/main/bitnami/rabbitmq#environment-variables
+  ##
+  securePassword: true
+  ## @param auth.updatePassword Обновлять пароль RabbitMQ при изменении секрета
+  ## см.: https://github.com/bitnami/containers/tree/main/bitnami/rabbitmq#environment-variables
+  ##
+  updatePassword: false
+  ## @param auth.existingPasswordSecret Существующий секрет с учетными данными RabbitMQ (секрет должен содержать ключ `rabbitmq-password` или переопределяться через auth.existingSecretPasswordKey)
+  ## например:
+  ## existingPasswordSecret: name-of-existing-secret
+  ##
+  existingPasswordSecret: ""
+  ## @param auth.existingSecretPasswordKey [по умолчанию: rabbitmq-password] Ключ пароля, извлекаемый из существующего секрета
+  ## ПРИМЕЧАНИЕ: игнорируется, если не установлен параметр `auth.existingSecret`
+  ##
+  existingSecretPasswordKey: ""
+  ## @param auth.enableLoopbackUser Если включено, пользователь `auth.username` может подключаться только с localhost
+  ##
+  enableLoopbackUser: false
+  ## @param auth.erlangCookie Erlang cookie для определения возможности взаимодействия между узлами
+  ## см.: https://github.com/bitnami/containers/tree/main/bitnami/rabbitmq#environment-variables
+  ##
+  erlangCookie: ""
+  ## @param auth.existingErlangSecret Существующий секрет с Erlang cookie RabbitMQ (должен содержать ключ `rabbitmq-erlang-cookie` или переопределяться через auth.existingSecretErlangKey)
+  ## например:
+  ## existingErlangSecret: name-of-existing-secret
+  ##
+  existingErlangSecret: ""
+  ## @param auth.existingSecretErlangKey [по умолчанию: rabbitmq-erlang-cookie] Ключ Erlang cookie, извлекаемый из существующего секрета
+  ## ПРИМЕЧАНИЕ: игнорируется, если не установлен параметр `auth.existingErlangSecret`
+  ##
+  existingSecretErlangKey: ""
+  ## Включить шифрование для rabbitmq
+  ## см.: https://www.rabbitmq.com/ssl.html
+  ## @param auth.tls.enabled Включить поддержку TLS в RabbitMQ
+  ## @param auth.tls.autoGenerated Автоматически генерировать самоподписанные TLS-сертификаты
+  ## @param auth.tls.failIfNoPeerCert При true соединение TLS будет отклонено, если клиент не предоставит сертификат
+  ## @param auth.tls.sslOptionsVerify Включить ли [проверку пиров](https://www.rabbitmq.com/ssl.html#peer-verification)?
+  ## @param auth.tls.sslOptionsPassword.enabled Включить использование пароля для приватного ключа
+  ## @param auth.tls.sslOptionsPassword.existingSecret Имя существующего секрета, содержащего sslOptionsPassword
+  ## @param auth.tls.sslOptionsPassword.key Ключ, указывающий на sslOptionsPassword в секрете, заданном в auth.tls.sslOptionsPassword.existingSecret
+  ## @param auth.tls.sslOptionsPassword.password Использовать эту строку как пароль. Если установлено, параметры auth.tls.sslOptionsPassword.existingSecret и auth.tls.sslOptionsPassword.key игнорируются
+  ## @param auth.tls.caCertificate Содержимое пакета сертификатов удостоверяющего центра (CA)
+  ## @param auth.tls.serverCertificate Содержимое серверного сертификата
+  ## @param auth.tls.serverKey Содержимое приватного ключа сервера
+  ## @param auth.tls.existingSecret Существующий секрет с содержимым сертификата для учетных данных RabbitMQ
+  ## @param auth.tls.existingSecretFullChain Содержит ли существующий секрет полный цепочку сертификатов (`tls.crt`). Будет использоваться вместо `ca.cert`, если `true`.
+  ## @param auth.tls.overrideCaCertificate Существующий секрет с содержимым сертификата, который будет смонтирован вместо `ca.crt` из caCertificate или existingSecret/existingSecretFullChain.
+  ##
+  tls:
+    enabled: false
+    autoGenerated: false
+    failIfNoPeerCert: true
+    sslOptionsVerify: verify_peer
+    sslOptionsPassword:
+      enabled: false
+      existingSecret: ""
+      key: ""
+      password: ""
+    caCertificate: ""
+    serverCertificate: ""
+    serverKey: ""
+    existingSecret: ""
+    existingSecretFullChain: false
+    overrideCaCertificate: ""
+## @param logs Путь к файлу логов Erlang сервера RabbitMQ. Значение для переменной окружения `RABBITMQ_LOGS`
+## см.: https://www.rabbitmq.com/logging.html#log-file-location
+##
+logs: "-"
+## @param ulimitNofiles Максимальное количество файловых дескрипторов RabbitMQ
+## см.: https://github.com/bitnami/containers/tree/main/bitnami/rabbitmq#environment-variables
+## см.: https://www.rabbitmq.com/install-debian.html#kernel-resource-limits
+##
+ulimitNofiles: "65535"
+## Максимальное количество потоков планировщика RabbitMQ и онлайн-потоков планировщика. По умолчанию создается поток на каждый обнаруженный CPU, с помощью следующих параметров можно настроить вручную.
+## см.: https://hamidreza-s.github.io/erlang/scheduling/real-time/preemptive/migration/2016/02/09/erlang-scheduler-details.html#scheduler-threads
+## см.: https://github.com/bitnami/charts/issues/2189
+## @param maxAvailableSchedulers Максимальное количество потоков планировщика RabbitMQ
+## @param onlineSchedulers Онлайн-потоки планировщика RabbitMQ
+##
+maxAvailableSchedulers: ""
+onlineSchedulers: ""
+## Порог памяти, при котором RabbitMQ перестанет читать из клиентских сетевых сокетов, чтобы избежать завершения процесса ОС
+## см.: https://www.rabbitmq.com/alarms.html
+## см.: https://www.rabbitmq.com/memory.html#threshold
+##
+memoryHighWatermark:
+  ## @param memoryHighWatermark.enabled Включить настройку порога памяти в RabbitMQ
+  ##
+  enabled: false
+  ## @param memoryHighWatermark.type Тип порога памяти. Может быть `absolute` или `relative`
+  ##
+  type: "relative"
+  ## Значение порога памяти.
+  ## @param memoryHighWatermark.value Значение порога памяти
+  ## Значение по умолчанию 0.4 означает 40% доступной ОЗУ
+  ## Примечание: относительный лимит памяти применяется к лимиту памяти resourcesPreset или resource.limits.memory для вычисления порога памяти
+  ## Можно также использовать абсолютное значение, например: 256Mi
+  ##
+  value: 0.4
+## @param plugins Список плагинов по умолчанию для включения (изменяйте только для удаления стандартных; для дополнительных плагинов используйте `extraPlugins`)
+##
+plugins: "rabbitmq_management rabbitmq_peer_discovery_k8s"
+
+## @param queue_master_locator Изменяет настройку queue_master_locator в конфиге rabbitmq
+##
+queue_master_locator: min-masters
+
+## @param communityPlugins Список плагинов сообщества (URL), которые будут загружены при инициализации контейнера
+## Используйте вместе с extraPlugins для их активации.
+##
+communityPlugins: ""
+## @param extraPlugins Дополнительные плагины для включения (одна строка с разделением через пробел)
+## Используйте это вместо `plugins` для добавления новых плагинов
+##
+extraPlugins: "rabbitmq_auth_backend_ldap"
+## Настройки кластеризации
+##
+clustering:
+  ## @param clustering.enabled Включить кластеризацию RabbitMQ
+  ##
+  enabled: true
+  ## @param clustering.name Имя кластера RabbitMQ
+  ## Если не указано, имя генерируется с помощью шаблона common.names.fullname
+  ##
+  name: ""
+  ## @param clustering.addressType Переключить режим кластеризации. Может быть `ip` или `hostname`
+  ##
+  addressType: hostname
+  ## @param clustering.rebalance Балансировка мастера для очередей в кластере при создании новой реплики
+  ## см.: https://www.rabbitmq.com/rabbitmq-queues.8.html#rebalance
+  ##
+  rebalance: false
+  ## @param clustering.forceBoot Принудительный запуск неожиданно завершившего работу кластера (в неожиданном порядке).
+  ## forceBoot выполняет 'rabbitmqctl force_boot' для принудительного запуска кластера, завершившего работу в неизвестном порядке
+  ## см.: https://www.rabbitmq.com/rabbitmqctl.8.html#force_boot
+  ##
+  forceBoot: false
+  ## @param clustering.partitionHandling Переключить стратегию обработки разделения. Может быть `autoheal`, `pause_minority`, `pause_if_all_down` или `ignore`
+  ## см.: https://www.rabbitmq.com/partitions.html#automatic-handling
+  ##
+  partitionHandling: autoheal
+## Загрузка файла определений RabbitMQ для настройки RabbitMQ
+##
+loadDefinition:
+  ## @param loadDefinition.enabled Включить загрузку файла определений RabbitMQ для настройки RabbitMQ
+  ##
+  enabled: false
+  ## @param loadDefinition.file Имя файла определений
+  ##
+  file: "/app/load_definition.json"
+  ## @param loadDefinition.existingSecret Существующий секрет с файлом определений
+  ## Можно использовать шаблоны, например:
+  ## existingSecret: "{{ .Release.Name }}-load-definition"
+  ##
+  existingSecret: ""
+## @param command Переопределить команду контейнера по умолчанию (полезно при использовании пользовательских образов)
+##
+command: []
+## @param args Переопределить аргументы контейнера по умолчанию (полезно при использовании пользовательских образов)
+##
+args: []
+## @param lifecycleHooks Переопределить хуки жизненного цикла для контейнеров RabbitMQ для автоматизации конфигурации до или после запуска
+##
+lifecycleHooks: {}
+## @param terminationGracePeriodSeconds Время ожидания (сек) до отправки сигнала завершения контейнеру.
+## Всё время сверх 10 секунд будет потрачено на синхронизацию, необходимую для предотвращения потери данных кластером.
+##
+terminationGracePeriodSeconds: 120
+## @param extraEnvVars Дополнительные переменные окружения для pod'ов RabbitMQ
+## Например:
+## extraEnvVars:
+##   - name: FOO
+##     value: BAR
+##
+extraEnvVars: []
+## @param extraEnvVarsCM Имя существующего ConfigMap с дополнительными переменными окружения
+##
+extraEnvVarsCM: ""
+## @param extraEnvVarsSecret Имя существующего секрета с дополнительными переменными окружения (для чувствительных данных)
+##
+extraEnvVarsSecret: ""
+## Порты контейнера
+## @param containerPorts.amqp
+## @param containerPorts.amqpTls
+## @param containerPorts.dist
+## @param containerPorts.manager
+## @param containerPorts.epmd
+## @param containerPorts.metrics
+##
+containerPorts:
+  amqp: 5672
+  amqpTls: 5671
+  dist: 25672
+  manager: 15672
+  epmd: 4369
+  metrics: 9419
+## Порты хоста
+## @param hostPorts.amqp
+## @param hostPorts.amqpTls
+## @param hostPorts.manager
+## @param hostPorts.metrics
+##
+hostPorts:
+  amqp: ""
+  amqpTls: ""
+  manager: ""
+  metrics: ""
+
+## @param initScripts Словарь инициализационных скриптов. Оценивается как шаблон.
+## Укажите словарь скриптов, которые будут выполнены при первом запуске
+## Также можно поместить скрипты в директорию files/docker-entrypoint-initdb.d
+## Например:
+## initScripts:
+##   my_init_script.sh: |
+##      #!/bin/sh
+##      echo "Do something."
+##
+initScripts: {}
+## @param initScriptsCM ConfigMap с инициализационными скриптами. Оценивается как шаблон.
+## Примечание: это переопределяет initScripts
+##
+initScriptsCM: ""
+## @param initScriptsSecret Секрет, содержащий скрипты `/docker-entrypoint-initdb.d`, которые будут выполнены при инициализации и содержат чувствительные данные. Оценивается как шаблон.
+##
+initScriptsSecret: ""
+## @param extraContainerPorts Дополнительные порты для включения в спецификацию контейнера, в основном информационные
+## Например:
+## extraContainerPorts:
+## - name: new_port_name
+##   containerPort: 1234
+##
+extraContainerPorts: []
+## @param configuration [string] Содержимое конфигурационного файла RabbitMQ: обязательная конфигурация кластера
+## Не переопределяйте, если не уверены в своих действиях.
+## Для добавления конфигурации используйте `extraConfiguration` или `advancedConfiguration`
+##
+
+## Параметры tcp_listen_options RabbitMQ
+## см.: https://www.rabbitmq.com/networking.html для дополнительной информации
+##
+tcpListenOptions:
+  ## @param tcpListenOptions.enabled Включить TCP-параметры прослушивания RabbitMQ
+  ##
+  enabled: true
+  ## @param tcpListenOptions.backlog Максимальный размер очереди непринятых TCP-соединений
+  ##
+  backlog: 128
+  ## @param tcpListenOptions.nodelay При true отключает алгоритм Нэйгла. По умолчанию true. Настоятельно рекомендуется большинству пользователей.
+  ##
+  nodelay: true
+  ## tcpListenOptions.linger
+  ##
+  linger:
+    ## @param tcpListenOptions.linger.lingerOn Включить задержку сокета сервера
+    ##
+    lingerOn: true
+    ## @param tcpListenOptions.linger.timeout Таймаут задержки сокета сервера
+    ##
+    timeout: 0
+  ## @param tcpListenOptions.keepalive При true включает TCP keepalives
+  ##
+  keepalive: false
+configuration: |-
+  ## Имя пользователя и пароль
+  default_user = {{ .Values.auth.username }}
+  {{- if and (not .Values.auth.securePassword) .Values.auth.password }}
+  default_pass = {{ .Values.auth.password }}
+  {{- end }}
+  {{- if .Values.clustering.enabled }}
+  ## Кластеризация
+  ##
+  cluster_name = {{ default (include "common.names.fullname" .) .Values.clustering.name }}
+  cluster_formation.peer_discovery_backend  = rabbit_peer_discovery_k8s
+  cluster_formation.k8s.host = kubernetes.default
+  cluster_formation.k8s.address_type = {{ .Values.clustering.addressType }}
+  {{- $svcName := printf "%s-%s" (include "common.names.fullname" .) (default "headless" .Values.servicenameOverride) }}
+  cluster_formation.k8s.service_name = {{ $svcName }}
+  cluster_formation.k8s.hostname_suffix = .{{ $svcName }}.{{ include "common.names.namespace" . }}.svc.{{ .Values.clusterDomain }}
+  cluster_formation.node_cleanup.interval = 10
+  cluster_formation.node_cleanup.only_log_warning = true
+  cluster_partition_handling = {{ .Values.clustering.partitionHandling }}
+  {{- end }}
+  {{ if and .Values.clustering.enabled .Values.loadDefinition.enabled }}
+  cluster_formation.target_cluster_size_hint = {{ .Values.replicaCount }}
+  {{ end }}
+  {{- if .Values.loadDefinition.enabled }}
+  load_definitions = {{ .Values.loadDefinition.file }}
+  {{- end }}
+  # локатор мастера очереди
+  queue_master_locator = {{ .Values.queue_master_locator }}
+  # включить loopback-пользователя
+  {{- if not (empty .Values.auth.username) }}
+  loopback_users.{{ .Values.auth.username }} = {{ .Values.auth.enableLoopbackUser }}
+  {{- else}}
+  loopback_users.guest = {{ .Values.auth.enableLoopbackUser }}
+  {{- end }}
+  {{ template "rabbitmq.extraConfiguration" . }}
+  {{- if .Values.auth.tls.enabled }}
+  ssl_options.verify = {{ .Values.auth.tls.sslOptionsVerify }}
+  listeners.ssl.default = {{ .Values.service.ports.amqpTls }}
+  ssl_options.fail_if_no_peer_cert = {{ .Values.auth.tls.failIfNoPeerCert }}
+  ssl_options.cacertfile = /opt/bitnami/rabbitmq/certs/ca_certificate.pem
+  ssl_options.certfile = /opt/bitnami/rabbitmq/certs/server_certificate.pem
+  ssl_options.keyfile = /opt/bitnami/rabbitmq/certs/server_key.pem
+  {{- if .Values.auth.tls.sslOptionsPassword.enabled }}
+  ssl_options.password = {{ include "common.secrets.passwords.manage" (dict "secret" .Values.auth.tls.sslOptionsPassword.existingSecret "key" .Values.auth.tls.sslOptionsPassword.key "providedValues" (list "auth.tls.sslOptionsPassword.password") "skipB64enc" true "failOnNew" false "context" $) }}
+  {{- end }}
+  {{- end }}
+  {{- if .Values.ldap.enabled }}
+  auth_backends.1.authn = ldap
+  auth_backends.1.authz = {{ ternary "ldap" "internal" .Values.ldap.authorisationEnabled }}
+  auth_backends.2 = internal
+  {{- $host :=  list }}
+  {{- $port :=  ternary 636 389 .Values.ldap.tls.enabled }}
+  {{- if .Values.ldap.uri }}
+  {{- $hostPort := get (urlParse .Values.ldap.uri) "host" }}
+  {{- $host = list (index (splitList ":" $hostPort) 0) -}}
+  {{- if (contains ":" $hostPort) }}
+  {{- $port = index (splitList ":" $hostPort) 1 -}}
+  {{- end }}
+  {{- end }}
+  {{- range $index, $server := concat $host .Values.ldap.servers }}
+  auth_ldap.servers.{{ add $index 1 }} = {{ $server }}
+  {{- end }}
+  auth_ldap.port = {{ coalesce .Values.ldap.port $port }}
+  {{- if or .Values.ldap.user_dn_pattern .Values.ldap.userDnPattern }}
+  auth_ldap.user_dn_pattern = {{ coalesce .Values.ldap.user_dn_pattern .Values.ldap.userDnPattern }}
+  {{- end }}
+  {{- if .Values.ldap.basedn }}
+  auth_ldap.dn_lookup_base = {{ .Values.ldap.basedn }}
+  {{- end }}
+  {{- if .Values.ldap.uidField }}
+  auth_ldap.dn_lookup_attribute = {{ .Values.ldap.uidField }}
+  {{- end }}
+  {{- if .Values.ldap.binddn }}
+  auth_ldap.dn_lookup_bind.user_dn = {{ .Values.ldap.binddn }}
+  auth_ldap.dn_lookup_bind.password = {{ required "'ldap.bindpw' is required when 'ldap.binddn' is defined" .Values.ldap.bindpw }}
+  {{- end }}
+  {{- if .Values.ldap.tls.enabled }}
+  auth_ldap.use_ssl = {{ not .Values.ldap.tls.startTls }}
+  auth_ldap.use_starttls = {{ .Values.ldap.tls.startTls }}
+  {{- if .Values.ldap.tls.CAFilename }}
+  auth_ldap.ssl_options.cacertfile = {{ .Values.ldap.tls.certificatesMountPath }}/{{ .Values.ldap.tls.CAFilename }}
+  {{- end }}
+  {{- if .Values.ldap.tls.certFilename }}
+  auth_ldap.ssl_options.certfile = {{ .Values.ldap.tls.certificatesMountPath }}/{{ .Values.ldap.tls.certFilename }}
+  auth_ldap.ssl_options.keyfile = {{ .Values.ldap.tls.certificatesMountPath }}/{{ required "'ldap.tls.certKeyFilename' is required when 'ldap.tls.certFilename' is defined" .Values.ldap.tls.certKeyFilename }}
+  {{- end }}
+  {{- if .Values.ldap.tls.skipVerify }}
+  auth_ldap.ssl_options.verify = verify_none
+  auth_ldap.ssl_options.fail_if_no_peer_cert = false
+  {{- else if .Values.ldap.tls.verify }}
+  auth_ldap.ssl_options.verify = {{ .Values.ldap.tls.verify }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  ## Метрики Prometheus
+  ##
+  prometheus.tcp.port = {{ .Values.containerPorts.metrics }}
+  {{- if .Values.memoryHighWatermark.enabled }}
+  ## Порог памяти
+  ##
+  {{- if (dig "limits" "memory" "" .Values.resources) }}
+  total_memory_available_override_value = {{ include "rabbitmq.toBytes" (dig "limits" "memory" "" .Values.resources) }}
+  {{- end }}
+  {{- if (eq .Values.memoryHighWatermark.type "absolute") }}
+  vm_memory_high_watermark.{{ .Values.memoryHighWatermark.type }} = {{ include "rabbitmq.toBytes" .Values.memoryHighWatermark.value }}
+  {{- else if (eq .Values.memoryHighWatermark.type "relative") }}
+  vm_memory_high_watermark.{{ .Values.memoryHighWatermark.type }} = {{ .Values.memoryHighWatermark.value }}
+  {{- end }}
+  {{- end }}
+  {{- if .Values.tcpListenOptions.enabled }}
+  ## Параметры TCP Listen
+  ##
+  tcp_listen_options.backlog = {{ .Values.tcpListenOptions.backlog }}
+  tcp_listen_options.nodelay = {{ .Values.tcpListenOptions.nodelay }}
+  tcp_listen_options.linger.on      = {{ .Values.tcpListenOptions.linger.lingerOn }}
+  tcp_listen_options.linger.timeout = {{ .Values.tcpListenOptions.linger.timeout }}
+  tcp_listen_options.keepalive = {{ .Values.tcpListenOptions.keepalive }}
+  {{- end }}
+## @param configurationExistingSecret Существующий секрет с конфигурацией для использования как rabbitmq.conf.
+## Должен содержать ключ "rabbitmq.conf"
+## Имеет приоритет над `configuration`, поэтому не используйте оба одновременно
+## При указании existingSecret, extraConfiguration и extraConfigurationExistingSecret не применяются
+##
+configurationExistingSecret: ""
+## @param extraConfiguration [string] Содержимое конфигурационного файла: дополнительная конфигурация, добавляемая к конфигурации RabbitMQ
+## Используйте это вместо `configuration` для добавления конфигурации
+## Не используйте одновременно с `extraConfigurationExistingSecret`
+##
+extraConfiguration: |-
+  #default_vhost = {{ .Release.Namespace }}-vhost
+  #disk_free_limit.absolute = 50MB
+## @param extraConfigurationExistingSecret Существующий секрет с дополнительной конфигурацией для добавления к `configuration`.
+## Должен содержать ключ "extraConfiguration"
+## Имеет приоритет над `extraConfiguration`, поэтому не используйте оба одновременно
+##
+extraConfigurationExistingSecret: ""
+## @param advancedConfiguration Содержимое конфигурационного файла: расширенная конфигурация
+## Используйте это как дополнительную конфигурацию в классическом формате (Erlang term configuration format)
+##
+## Пример авторизации LDAP:
+## advancedConfiguration: |-
+##   [{rabbitmq_auth_backend_ldap,[
+##      {tag_queries,           [{administrator, {constant, true}},
+##                               {management,    {constant, true}}]}
+##   ]}].
+##
+## Если заданы оба параметра, advancedConfiguration и advancedConfigurationExistingSecret, будет использоваться advancedConfiguration вместо секрета.
+#
+advancedConfiguration: ""
+## @param advancedConfigurationExistingSecret Существующий секрет с файлом расширенной конфигурации (должен содержать ключ `advanced.config`).
+## Используйте это как дополнительную конфигурацию в классическом формате (Erlang term configuration format), как в advancedConfiguration
+## Не используйте вместе с advancedConfiguration, будет проигнорировано
+##
+advancedConfigurationExistingSecret: ""
+## Эта подсистема была введена в RabbitMQ 3.8.0 для поддержки поочередного обновления членов кластера без остановки всего кластера.
+## Флаги функций — это механизм, который определяет, какие функции считаются включёнными или доступными на всех узлах кластера. Если флаг включён, то включена и связанная с ним функция (или поведение). Если нет — все узлы кластера отключают функцию (поведение).
+## например, drop_unroutable_metric,empty_basic_get_metric,implicit_default_bindings,maintenance_mode_status,quorum_queue,virtual_host_metadata
+## @param featureFlags определяет, какие функции считаются включёнными или доступными на всех узлах кластера.
+##
+featureFlags: ""
+## Конфигурация LDAP
+##
+ldap:
+  ## @param ldap.enabled Включить поддержку LDAP
+  ##
+  enabled: false
+  ## @param ldap.uri Строка подключения к LDAP.
+  ##
+  uri: ""
+  ## @param ldap.servers Список хостов LDAP-серверов. Используется только если ldap.uri не задан
+  ##
+  servers: []
+  ## @param ldap.port Порт LDAP-серверов. Используется только если ldap.uri не задан
+  ##
+  port: ""
+  ## УСТАРЕЛО ldap.user_dn_pattern, будет удалено в будущем, используйте userDnPattern вместо этого
+  ## Шаблон для преобразования имени пользователя в значение для LDAP bind
+  ## @param ldap.userDnPattern Шаблон для преобразования имени пользователя в значение для LDAP bind.
+  ## см.: https://www.rabbitmq.com/ldap.html#usernames-and-dns
+  ##
+  userDnPattern: ""
+  ## @param ldap.binddn DN аккаунта, используемого для поиска в LDAP-сервере.
+  ##
+  binddn: ""
+  ## @param ldap.bindpw Пароль для аккаунта binddn.
+  ##
+  bindpw: ""
+  ## @param ldap.basedn Базовый DN, где binddn будет искать пользователей.
+  ##
+  basedn: ""
+  ## @param ldap.uidField Поле для сопоставления с именем пользователя (uid, samAccountName, cn и т.д.). Соответствует 'dn_lookup_attribute' в конфиге RabbitMQ
+  ## см.: https://www.rabbitmq.com/ldap.html#usernames-and-dns
+  ##
+  ## @param ldap.uidField Поле для сопоставления с именем пользователя (uid, samAccountName, cn и т.д.). Соответствует 'dn_lookup_attribute' в конфиге RabbitMQ
+  ##
+  uidField: ""
+  ## @param ldap.authorisationEnabled Включить авторизацию LDAP. Пожалуйста, задайте 'advancedConfiguration' с tag, topic, resources и vhost mapping
+  ## см.: https://www.rabbitmq.com/ldap.html#authorisation
+  ##
+  authorisationEnabled: false
+  ## @param ldap.tls.enabled Включить TLS-конфигурацию.
+  ## @param ldap.tls.startTls Использовать STARTTLS вместо LDAPS.
+  ## @param ldap.tls.skipVerify Пропустить любую SSL-проверку (имён хостов или сертификатов)
+  ## @param ldap.tls.verify Проверять соединение. Допустимые значения: 'verify_peer' или 'verify_none'
+  ## @param ldap.tls.certificatesMountPath Путь монтирования сертификатов LDAP.
+  ## @param ldap.tls.certificatesSecret Секрет с сертификатами LDAP.
+  ## @param ldap.tls.CAFilename  Имя файла CA-сертификата. Должно совпадать с ключом CA в ldap.tls.certificatesSecret.
+  ## @param ldap.tls.certFilename Имя файла клиентского сертификата для аутентификации на LDAP-сервере. Должно совпадать с ключом сертификата в ldap.tls.certificatesSecret.
+  ## @param ldap.tls.certKeyFilename Имя файла клиентского ключа для аутентификации на LDAP-сервере. Должно совпадать с ключом сертификата в ldap.tls.certificatesSecret.
+  ##
+  tls:
+    enabled: false
+    startTls: false
+    skipVerify: false
+    verify: "verify_peer"
+    certificatesMountPath: /opt/bitnami/rabbitmq/ldap/certs
+    certificatesSecret: ""
+    CAFilename: ""
+    certFilename: ""
+    certKeyFilename: ""
+## @param extraVolumeMounts При необходимости укажите дополнительный список volumeMounts
+## Примеры:
+## extraVolumeMounts:
+##   - name: extras
+##     mountPath: /usr/share/extras
+##     readOnly: true
+##
+extraVolumeMounts: []
+## @param extraVolumes При необходимости укажите дополнительный список volumes.
+## Пример:
+## extraVolumes:
+##   - name: extras
+##     emptyDir: {}
+##
+extraVolumes: []
+## @param extraSecrets При необходимости укажите дополнительные секреты, создаваемые чартом.
+## Это может быть полезно в сочетании с load_definitions для автоматического создания секрета с определениями для загрузки.
+## Пример:
+## extraSecrets:
+##   load-definition:
+##     load_definition.json: |
+##       {
+##         ...
+##       }
+##
+extraSecrets: {}
+## @param extraSecretsPrependReleaseName Установите этот флаг в true, если extraSecrets должны создаваться с префиксом <release-name>.
+##
+extraSecretsPrependReleaseName: false
+## @section Параметры Statefulset
+##
+
+## @param replicaCount Количество реплик RabbitMQ для развертывания
+##
+replicaCount: 1
+## @param schedulerName Использовать альтернативный планировщик, например "stork".
+## см.: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+##
+schedulerName: ""
+## RabbitMQ должен инициализироваться по одному при первом построении кластера.
+## Поэтому значение podManagementPolicy по умолчанию — 'OrderedReady'
+## После того как RabbitMQ войдет в кластер, при перезапуске он будет ждать ответа от другого
+## RabbitMQ в том же кластере, кроме последнего RabbitMQ этого кластера.
+## Если кластер завершил работу корректно, podManagementPolicy менять не нужно,
+## потому что первый RabbitMQ StatefulSet всегда будет последним в кластере.
+## Однако если последний RabbitMQ кластера не является первым из-за сбоя,
+## необходимо изменить podManagementPolicy на 'Parallel'.
+## см.: https://www.rabbitmq.com/clustering.html#restarting
+## @param podManagementPolicy Политика управления pod'ами
+##
+podManagementPolicy: OrderedReady
+## @param podLabels Метки pod'ов RabbitMQ. Оценивается как шаблон
+## см.: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+##
+podLabels: {}
+## @param podAnnotations Аннотации pod'ов RabbitMQ. Оценивается как шаблон
+## см.: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+##
+podAnnotations: {}
+## @param updateStrategy.type Тип стратегии обновления для StatefulSet RabbitMQ
+## см.: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+##
+updateStrategy:
+  ## StrategyType
+  ## Может быть RollingUpdate или OnDelete
+  ##
+  type: RollingUpdate
+## @param statefulsetLabels Метки StatefulSet RabbitMQ. Оценивается как шаблон
+## см.: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+##
+statefulsetLabels: {}
+## @param statefulsetAnnotations Аннотации StatefulSet RabbitMQ. Оценивается как шаблон
+## см.: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+##
+statefulsetAnnotations: {}
+## @param priorityClassName Имя класса приоритета, используемого pod'ами RabbitMQ, класс должен быть создан заранее
+## см.: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
+##
+priorityClassName: ""
+## @param podAffinityPreset Пресет аффинности pod'ов. Игнорируется, если задан affinity. Допустимые значения: `soft` или `hard`
+## см.: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+##
+podAffinityPreset: ""
+## @param podAntiAffinityPreset Пресет антиаффинности pod'ов. Игнорируется, если задан affinity. Допустимые значения: `soft` или `hard`
+## см.: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+##
+podAntiAffinityPreset: soft
+## Пресет аффинности узлов
+## см.: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+##
+nodeAffinityPreset:
+  ## @param nodeAffinityPreset.type Тип пресета аффинности узлов. Игнорируется, если задан affinity. Допустимые значения: `soft` или `hard`
+  ##
+  type: ""
+  ## @param nodeAffinityPreset.key Ключ метки узла для сопоставления. Игнорируется, если задан affinity.
+  ## Например:
+  ## key: "kubernetes.io/e2e-az-name"
+  ##
+  key: ""
+  ## @param nodeAffinityPreset.values Значения метки узла для сопоставления. Игнорируется, если задан affinity.
+  ## Например:
+  ## values:
+  ##   - e2e-az1
+  ##   - e2e-az2
+  ##
+  values: []
+## @param affinity Аффинность для назначения pod'ов. Оценивается как шаблон
+## см.: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+## Примечание: podAffinityPreset, podAntiAffinityPreset и nodeAffinityPreset игнорируются, если задано это значение
+##
+affinity: {}
+## @param nodeSelector Метки узлов для назначения pod'ов. Оценивается как шаблон
+## см.: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+##
+nodeSelector: {}
+## @param tolerations Толерантности для назначения pod'ов. Оценивается как шаблон
+## см.: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+##
+tolerations: []
+## @param topologySpreadConstraints Ограничения распределения топологии для равномерного распределения pod'ов по кластеру между зонами отказа. Оценивается как шаблон
+## см.: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/#spread-constraints-for-pods
+##
+topologySpreadConstraints: []
+## Security Context pod'ов RabbitMQ
+## см.: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+## @param podSecurityContext.enabled Включить Security Context pod'ов RabbitMQ
+## @param podSecurityContext.fsGroupChangePolicy Установить политику изменения группы файловой системы
+## @param podSecurityContext.sysctls Установить параметры ядра через интерфейс sysctl
+## @param podSecurityContext.supplementalGroups Установить дополнительные группы файловой системы
+## @param podSecurityContext.fsGroup Установить fsGroup Security Context pod'а RabbitMQ
+##
+podSecurityContext:
+  enabled: true
+  fsGroupChangePolicy: Always
+  sysctls: []
+  supplementalGroups: []
+  fsGroup: 1001
+## @param containerSecurityContext.enabled Включить Security Context контейнеров RabbitMQ
+## @param containerSecurityContext.seLinuxOptions [object,nullable] Установить параметры SELinux в контейнере
+## @param containerSecurityContext.runAsUser Установить runAsUser Security Context контейнеров RabbitMQ
+## @param containerSecurityContext.runAsGroup Установить runAsGroup Security Context контейнеров RabbitMQ
+## @param containerSecurityContext.runAsNonRoot Установить runAsNonRoot Security Context контейнера RabbitMQ
+## @param containerSecurityContext.allowPrivilegeEscalation Установить возможность повышения привилегий контейнера
+## @param containerSecurityContext.readOnlyRootFilesystem Установить readOnlyRootFilesystem Security Context контейнера
+## @param containerSecurityContext.capabilities.drop Установить runAsNonRoot Security Context контейнера
+## @param containerSecurityContext.seccompProfile.type Установить профиль seccomp Security Context контейнера
+## см.: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+## Пример:
+##   containerSecurityContext:
+##     capabilities:
+##       drop: ["NET_RAW"]
+##     readOnlyRootFilesystem: true
+##
+containerSecurityContext:
+  enabled: true
+  seLinuxOptions: {}
+  runAsUser: 1001
+  runAsGroup: 1001
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: ["ALL"]
+  seccompProfile:
+    type: "RuntimeDefault"
+## Ресурсы контейнеров RabbitMQ: запросы и лимиты
+## см.: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+## Обычно мы рекомендуем не указывать значения по умолчанию и оставлять это на усмотрение пользователя.
+## Это также увеличивает вероятность запуска чартов в средах с небольшими ресурсами, например, Minikube. Если вы хотите указать ресурсы, раскомментируйте строки ниже, настройте их и удалите фигурные скобки после 'resources:'.
+## @param resourcesPreset Установить ресурсы контейнера согласно одному из пресетов (допустимые значения: none, nano, micro, small, medium, large, xlarge, 2xlarge). Игнорируется, если задан resources (resources рекомендуется для production).
+## Подробнее: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
+##
+resourcesPreset: "micro"
+## @param resources Установить запросы и лимиты ресурсов для контейнера (важно для production-нагрузок)
+## Пример:
+## resources:
+##   requests:
+##     cpu: 2
+##     memory: 512Mi
+##   limits:
+##     cpu: 3
+##     memory: 1024Mi
+##
+resources: {}
+## Настроить дополнительные параметры liveness probe для контейнеров RabbitMQ
+## см.: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+## @param livenessProbe.enabled Включить livenessProbe
+## @param livenessProbe.initialDelaySeconds Задержка перед запуском livenessProbe
+## @param livenessProbe.periodSeconds Периодичность livenessProbe
+## @param livenessProbe.timeoutSeconds Таймаут livenessProbe
+## @param livenessProbe.failureThreshold Порог срабатывания livenessProbe
+## @param livenessProbe.successThreshold Порог успешности livenessProbe
+##
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 120
+  timeoutSeconds: 20
+  periodSeconds: 30
+  failureThreshold: 6
+  successThreshold: 1
+## Настроить дополнительные параметры readiness probe для контейнеров RabbitMQ
+## см.: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+## @param readinessProbe.enabled Включить readinessProbe
+## @param readinessProbe.initialDelaySeconds Задержка перед запуском readinessProbe
+## @param readinessProbe.periodSeconds Периодичность readinessProbe
+## @param readinessProbe.timeoutSeconds Таймаут readinessProbe
+## @param readinessProbe.failureThreshold Порог срабатывания readinessProbe
+## @param readinessProbe.successThreshold Порог успешности readinessProbe
+##
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 10
+  timeoutSeconds: 20
+  periodSeconds: 30
+  failureThreshold: 3
+  successThreshold: 1
+## Настроить дополнительные параметры startup probe для контейнеров RabbitMQ
+## см.: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+## @param startupProbe.enabled Включить startupProbe
+## @param startupProbe.initialDelaySeconds Задержка перед запуском startupProbe
+## @param startupProbe.periodSeconds Периодичность startupProbe
+## @param startupProbe.timeoutSeconds Таймаут startupProbe
+## @param startupProbe.failureThreshold Порог срабатывания startupProbe
+## @param startupProbe.successThreshold Порог успешности startupProbe
+##
+startupProbe:
+  enabled: false
+  initialDelaySeconds: 10
+  timeoutSeconds: 20
+  periodSeconds: 30
+  failureThreshold: 3
+  successThreshold: 1
+## @param customLivenessProbe Переопределить стандартную liveness probe
+##
+customLivenessProbe: {}
+## @param customReadinessProbe Переопределить стандартную readiness probe
+##
+customReadinessProbe: {}
+## @param customStartupProbe Определить пользовательскую startup probe
+## см.: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-startup-probes
+##
+customStartupProbe: {}
+## @param initContainers Добавить init-контейнеры в pod RabbitMQ
+## Пример:
+## initContainers:
+##   - name: your-image-name
+##     image: your-image
+##     imagePullPolicy: Always
+##     ports:
+##       - name: portname
+##         containerPort: 1234
+##
+initContainers: []
+## @param sidecars Добавить sidecar-контейнеры в pod RabbitMQ
+## Пример:
+## sidecars:
+##   - name: your-image-name
+##     image: your-image
+##     imagePullPolicy: Always
+##     ports:
+##       - name: portname
+##         containerPort: 1234
+##
+sidecars: []
+## Конфигурация Pod Disruption Budget
+## см.: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+##
+pdb:
+  ## @param pdb.create Включить/отключить создание Pod Disruption Budget
+  ##
+  create: true
+  ## @param pdb.minAvailable Минимальное количество/процент pod'ов, которые должны оставаться запущенными
+  ##
+  minAvailable: ""
+  ## @param pdb.maxUnavailable Максимальное количество/процент pod'ов, которые могут быть недоступны. По умолчанию `1`, если оба параметра pdb.minAvailable и pdb.maxUnavailable пусты.
+  ##
+  maxUnavailable: ""
+## @section Параметры RBAC
+##
+
+## ServiceAccount для pod'ов RabbitMQ
+## см.: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+##
+serviceAccount:
+  ## @param serviceAccount.create Включить создание ServiceAccount для pod'ов RabbitMQ
+  ##
+  create: true
+  ## @param serviceAccount.name Имя создаваемого serviceAccount
+  ## Если не указано и create=true, имя генерируется с помощью шаблона rabbitmq.fullname
+  ##
+  name: ""
+  ## @param serviceAccount.automountServiceAccountToken Автоматически монтировать токен service account в pod
+  ##
+  automountServiceAccountToken: false
+  ## @param serviceAccount.annotations Аннотации для service account. Оценивается как шаблон. Используется только если `create` = `true`.
+  ##
+  annotations: {}
+## Ролевой доступ (RBAC)
+## см.: https://kubernetes.io/docs/admin/authorization/rbac/
+##
+rbac:
+  ## @param rbac.create Следует ли создавать правила RBAC
+  ## Привязка ServiceAccount RabbitMQ к роли,
+  ## разрешающей pod'ам RabbitMQ обращаться к API Kubernetes
+  ##
+  create: true
+  ## @param rbac.rules Пользовательские правила RBAC
+  ## Пример:
+  ## rules:
+  ##   - apiGroups:
+  ##       - ""
+  ##     resources:
+  ##       - pods
+  ##     verbs:
+  ##       - get
+  ##       - list
+  ##
+  rules: []
+## @section Параметры персистентности
+##
+persistence:
+  ## @param persistence.enabled Включить персистентность данных RabbitMQ с помощью PVC
+  ##
+  enabled: true
+  ## @param persistence.storageClass StorageClass PVC для тома данных RabbitMQ
+  ## Если определено, storageClassName: <storageClass>
+  ## Если установлено "-", storageClassName: "", что отключает динамическое выделение
+  ## Если не определено (по умолчанию) или null, спецификация storageClassName не задается,
+  ##   выбирается провиженер по умолчанию (gp2 на AWS, standard на GKE, AWS и OpenStack)
+  ##
+  storageClass: ""
+  ## @param persistence.selector Селектор для сопоставления с существующим Persistent Volume
+  ## selector:
+  ##   matchLabels:
+  ##     app: my-app
+  ##
+  selector: {}
+  ## @param persistence.accessModes Режимы доступа PVC для тома данных RabbitMQ
+  ##
+  accessModes:
+    - ReadWriteOnce
+  ## @param persistence.existingClaim Указать существующий PersistentVolumeClaim
+  ## Значение оценивается как шаблон
+  ## Например, имя может зависеть от .Release или .Chart
+  ##
+  existingClaim: ""
+  ## @param persistence.mountPath Путь монтирования тома
+  ## Примечание: полезно при использовании пользовательских образов RabbitMQ
+  ##
+  mountPath: /opt/bitnami/rabbitmq/.rabbitmq/mnesia
+  ## @param persistence.subPath Подкаталог тома для монтирования
+  ## Полезно в dev-средах и при использовании одного PV для нескольких сервисов
+  ##
+  subPath: ""
+  ## @param persistence.size Запрос PVC на объем хранилища для данных RabbitMQ
+  ## Если вы изменяете это значение, возможно, потребуется скорректировать `rabbitmq.diskFreeLimit`
+  ##
+  size: 8Gi
+  ## @param persistence.annotations Аннотации PVC. Оценивается как шаблон
+  ## Пример:
+  ## annotations:
+  ##   example.io/disk-volume-type: SSD
+  ##
+  annotations: {}
+  ## @param persistence.labels Метки PVC. Оценивается как шаблон
+  ## Пример:
+  ## labels:
+  ##   app: my-app
+  labels: {}
+## Политика удержания Persistent Volume Claim
+## см.: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#persistentvolumeclaim-retention
+##
+persistentVolumeClaimRetentionPolicy:
+  ## @param persistentVolumeClaimRetentionPolicy.enabled Включить политику удержания тома для StatefulSet RabbitMQ
+  ##
+  enabled: false
+  ## @param persistentVolumeClaimRetentionPolicy.whenScaled Поведение удержания тома при уменьшении количества реплик StatefulSet
+  ##
+  whenScaled: Retain
+  ## @param persistentVolumeClaimRetentionPolicy.whenDeleted Поведение удержания тома при удалении StatefulSet
+  ##
+  whenDeleted: Retain
+## @section Параметры экспонирования
+##
+
+## Тип Kubernetes-сервиса
+##
+service:
+  ## @param service.type Тип Kubernetes-сервиса
+  ##
+  type: ClusterIP
+  ## @param service.portEnabled Порт Amqp. Не может быть отключен, если `auth.tls.enabled` = `false`. Слушатель можно отключить с помощью `listeners.tcp = none`.
+  ##
+  portEnabled: true
+  ## @param service.distPortEnabled Порт сервера распределения Erlang
+  ##
+  distPortEnabled: true
+  ## @param service.managerPortEnabled Порт менеджера RabbitMQ
+  ## см.: https://github.com/bitnami/containers/tree/main/bitnami/rabbitmq#environment-variables
+  ##
+  managerPortEnabled: true
+  ## @param service.epmdPortEnabled Порт службы обнаружения EPMD RabbitMQ
+  ##
+  epmdPortEnabled: true
+  ## Порты сервиса
+  ## @param service.ports.amqp Порт Amqp сервиса
+  ## @param service.ports.amqpTls Порт Amqp TLS сервиса
+  ## @param service.ports.dist Порт сервиса распределения Erlang
+  ## @param service.ports.manager Порт менеджера RabbitMQ
+  ## @param service.ports.metrics Порт сервиса метрик Prometheus RabbitMQ
+  ## @param service.ports.epmd Порт службы обнаружения EPMD
+  ##
+  ports:
+    amqp: 5672
+    amqpTls: 5671
+    dist: 25672
+    manager: 15672
+    metrics: 9419
+    epmd: 4369
+  ## Имена портов сервиса
+  ## @param service.portNames.amqp Имя порта Amqp сервиса
+  ## @param service.portNames.amqpTls Имя порта Amqp TLS сервиса
+  ## @param service.portNames.dist Имя порта сервиса распределения Erlang
+  ## @param service.portNames.manager Имя порта менеджера RabbitMQ
+  ## @param service.portNames.metrics Имя порта метрик Prometheus RabbitMQ
+  ## @param service.portNames.epmd Имя порта службы обнаружения EPMD
+  ##
+  portNames:
+    amqp: "amqp"
+    amqpTls: "amqp-tls"
+    dist: "dist"
+    manager: "http-stats"
+    metrics: "metrics"
+    epmd: "epmd"
+  ## NodePort'ы для экспонирования
+  ## @param service.nodePorts.amqp NodePort для Ampq
+  ## @param service.nodePorts.amqpTls NodePort для Ampq TLS
+  ## @param service.nodePorts.dist NodePort для распределения Erlang
+  ## @param service.nodePorts.manager NodePort для менеджера RabbitMQ
+  ## @param service.nodePorts.epmd NodePort для службы обнаружения EPMD
+  ## @param service.nodePorts.metrics NodePort для метрик Prometheus RabbitMQ
+  ##
+  nodePorts:
+    amqp: ""
+    amqpTls: ""
+    dist: ""
+    manager: ""
+    epmd: ""
+    metrics: ""
+  ## @param service.extraPorts Дополнительные порты для экспонирования в сервисе
+  ## Например:
+  ## extraPorts:
+  ## - name: new_svc_name
+  ##   port: 1234
+  ##   targetPort: 1234
+  ##
+  extraPorts: []
+  ## @param service.extraPortsHeadless Дополнительные порты для экспонирования в headless-сервисе
+  ## Например:
+  ## extraPortsHeadless:
+  ## - name: new_svc_name
+  ##   port: 1234
+  ##   targetPort: 1234
+  ##
+  extraPortsHeadless: []
+  ## @param service.loadBalancerSourceRanges Разрешённые адреса при типе сервиса `LoadBalancer`
+  ## https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+  ## например:
+  ## loadBalancerSourceRanges:
+  ## - 10.10.10.0/24
+  ##
+  loadBalancerSourceRanges: []
+  ## @param service.allocateLoadBalancerNodePorts Выделять ли nodePort'ы при типе сервиса LoadBalancer
+  ## см.: https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-nodeport-allocation
+  ##
+  allocateLoadBalancerNodePorts: true
+  ## @param service.externalIPs Установить ExternalIPs
+  ##
+  externalIPs: []
+  ## @param service.externalTrafficPolicy Включить сохранение исходного IP клиента
+  ## см.: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+  ##
+  externalTrafficPolicy: Cluster
+  ## @param service.loadBalancerClass Установить LoadBalancerClass
+  ##
+  loadBalancerClass: ""
+  ## @param service.loadBalancerIP Установить LoadBalancerIP
+  ##
+  loadBalancerIP: ""
+  ## @param service.clusterIP Cluster IP Kubernetes-сервиса
+  ## например:
+  ## clusterIP: None
+  ##
+  clusterIP: ""
+  ## @param service.labels Метки сервиса. Оценивается как шаблон
+  ##
+  labels: {}
+  ## @param service.annotations Аннотации сервиса. Оценивается как шаблон
+  ## Пример:
+  ## annotations:
+  ##   service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
+  ##
+  annotations: {}
+  ## УСТАРЕЛО service.annotationsHeadless, будет удалено в будущем, используйте service.headless.annotations вместо этого
+  ## @param service.annotationsHeadless Аннотации headless-сервиса. Оценивается как шаблон
+  ## Пример:
+  ## annotations:
+  ##   external-dns.alpha.kubernetes.io/internal-hostname: rabbitmq.example.com
+  ##
+  annotationsHeadless: {}
+  ## Свойства headless-сервиса
+  ##
+  headless:
+    ## @param service.headless.annotations Аннотации для headless-сервиса.
+    ##
+    annotations: {}
+  ## @param service.sessionAffinity Аффинность сессии для Kubernetes-сервиса, может быть "None" или "ClientIP"
+  ## Если "ClientIP", последовательные запросы клиента будут направляться к одному и тому же Pod'у
+  ## см.: https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies
+  ##
+  sessionAffinity: None
+  ## @param service.sessionAffinityConfig Дополнительные настройки для sessionAffinity
+  ## sessionAffinityConfig:
+  ##   clientIP:
+  ##     timeoutSeconds: 300
+  ##
+  sessionAffinityConfig: {}
+  ## @param service.trafficDistribution Traffic Distribution предоставляет ещё один
+  ## способ влиять на маршрутизацию трафика внутри Kubernetes-сервиса.
+  ##
+  trafficDistribution: "PreferClose"
+## Настроить ресурс ingress, который позволяет получить доступ к установке RabbitMQ. Установите URL
+## см.: https://kubernetes.io/docs/concepts/services-networking/ingress/
+##
+ingress:
+  ## @param ingress.enabled Включить ресурс ingress для консоли управления
+  ##
+  enabled: false
+  ## @param ingress.path Путь для хоста по умолчанию. Возможно, потребуется установить '/*' для использования с ALB ingress-контроллерами.
+  ##
+  path: /
+  ## @param ingress.pathType Тип пути Ingress
+  ##
+  pathType: ImplementationSpecific
+  ## @param ingress.hostname Хост по умолчанию для ресурса ingress
+  ##
+  hostname: rabbitmq.local
+  ## @param ingress.annotations Дополнительные аннотации для ресурса Ingress. Для включения автогенерации сертификатов укажите здесь аннотации cert-manager.
+  ## Полный список возможных аннотаций ingress см. по ссылке
+  ## см.: https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md
+  ## Используйте этот параметр для установки необходимых аннотаций для cert-manager, см.
+  ## см.: https://cert-manager.io/docs/usage/ingress/#supported-annotations
+  ##
+  ## например:
+  ## annotations:
+  ##   kubernetes.io/ingress.class: nginx
+  ##   cert-manager.io/cluster-issuer: cluster-issuer-name
+  ##
+  annotations: {}
+  ## @param ingress.tls Включить TLS-конфигурацию для хоста, определённого в параметре `ingress.hostname`
+  ## TLS-сертификаты будут получены из TLS-секрета с именем: {{- printf "%s-tls" .Values.ingress.hostname }}
+  ## Вы можете:
+  ##   - Использовать параметр `ingress.secrets` для создания этого TLS-секрета
+  ##   - Использовать cert-manager для его создания, установив соответствующие аннотации
+  ##   - Использовать Helm для создания самоподписанных сертификатов, установив `ingress.selfSigned=true`
+  ##
+  tls: false
+  ## @param ingress.selfSigned Установите true для создания TLS-секрета для этой записи ingress
+  ## с использованием самоподписанных сертификатов, сгенерированных Helm
+  ##
+  selfSigned: false
+  ## @param ingress.extraHosts Список дополнительных хостов, которые будут покрыты этой записью ingress.
+  ## Обычно достаточно hostname выше, но если нужно больше хостов, это массив
+  ## например:
+  ## extraHosts:
+  ##   - name: rabbitmq.local
+  ##     path: /
+  ##
+  extraHosts: []
+  ## @param ingress.extraPaths Массив дополнительных произвольных путей, которые могут быть добавлены в ingress под основным хостом
+  ## например:
+  ## extraPaths:
+  ## - path: /*
+  ##   backend:
+  ##     serviceName: ssl-redirect
+  ##     servicePort: use-annotation
+  ##
+  extraPaths: []
+  ## @param ingress.extraRules Список дополнительных правил, которые будут добавлены к этой записи ingress. Оценивается как шаблон
+  ## Полезно для дополнительной настройки, например, использования другого backend
+  ##
+  extraRules: []
+  ## @param ingress.extraTls Конфигурация tls для дополнительных хостов, покрываемых этой записью ingress.
+  ## см.: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
+  ## например:
+  ## extraTls:
+  ##   - hosts:
+  ##       - rabbitmq.local
+  ##     secretName: rabbitmq.local-tls
+  ##
+  extraTls: []
+  ## @param ingress.secrets Пользовательские TLS-сертификаты в виде секретов
+  ## ПРИМЕЧАНИЕ: 'key' и 'certificate' должны быть в формате PEM
+  ## ПРИМЕЧАНИЕ: 'name' должен совпадать с 'secretName', указанным выше
+  ## Если не задано и вы используете cert-manager, это не требуется, cert-manager создаст секрет с валидными сертификатами
+  ## Если не задано и вы НЕ используете cert-manager, будут созданы самоподписанные сертификаты, действительные 365 дней
+  ## Также возможно создать и управлять сертификатами вне этого helm-чарта
+  ## Подробнее см. README.md
+  ## например:
+  ## secrets:
+  ##   - name: rabbitmq.local-tls
+  ##     key: |-
+  ##       -----BEGIN RSA PRIVATE KEY-----
+  ##       ...
+  ##       -----END RSA PRIVATE KEY-----
+  ##     certificate: |-
+  ##       -----BEGIN CERTIFICATE-----
+  ##       ...
+  ##       -----END CERTIFICATE-----
+  ##
+  secrets: []
+  ## @param ingress.ingressClassName IngressClass, который будет использоваться для реализации Ingress (Kubernetes 1.18+)
+  ## Поддерживается в Kubernetes 1.18+ и требуется, если у вас более одного IngressClass, помеченного как default для кластера.
+  ## см.: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
+  ##
+  ingressClassName: ""
+  ## @param ingress.existingSecret Если у вас уже есть сертификат в виде секрета.
+  ##
+  existingSecret: ""
+## Сетевые политики
+## см.: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+##
+networkPolicy:
+  ## @param networkPolicy.enabled Указывает, следует ли создавать NetworkPolicy
+  ##
+  enabled: true
+  ## @param networkPolicy.kubeAPIServerPorts [массив] Список возможных конечных точек kube-apiserver (ограничьте для повышения безопасности)
+  ##
+  kubeAPIServerPorts: [443, 6443, 8443]
+  ## @param networkPolicy.allowExternal Не требовать метку сервера для соединений
+  ## Модель политики для применения. Если false, только pod'ы с правильной
+  ## меткой сервера получат сетевой доступ к портам, на которых слушает сервер.
+  ## Если true, сервер примет соединения от любого источника
+  ## (с правильным портом назначения).
+  ##
+  allowExternal: true
+  ## @param networkPolicy.allowExternalEgress Разрешить pod'у доступ к любому диапазону портов и всем назначениям.
+  ##
+  allowExternalEgress: true
+  ## @param networkPolicy.addExternalClientAccess Разрешить доступ pod'ам с меткой client=true. Игнорируется, если `networkPolicy.allowExternal` = true.
+  ##
+  addExternalClientAccess: true
+  ## @param networkPolicy.extraIngress [массив] Добавить дополнительные ingress-правила в NetworkPolicy
+  ## например:
+  ## extraIngress:
+  ##   - ports:
+  ##       - port: 1234
+  ##     from:
+  ##       - podSelector:
+  ##           - matchLabels:
+  ##               - role: frontend
+  ##       - podSelector:
+  ##           - matchExpressions:
+  ##               - key: role
+  ##                 operator: In
+  ##                 values:
+  ##                   - frontend
+  extraIngress: []
+  ## @param networkPolicy.extraEgress [массив] Добавить дополнительные egress-правила в NetworkPolicy
+  ## например:
+  ## extraEgress:
+  ##   - ports:
+  ##       - port: 1234
+  ##     to:
+  ##       - podSelector:
+  ##           - matchLabels:
+  ##               - role: frontend
+  ##       - podSelector:
+  ##           - matchExpressions:
+  ##               - key: role
+  ##                 operator: In
+  ##                 values:
+  ##                   - frontend
+  ##
+  extraEgress: []
+  ## @param networkPolicy.ingressPodMatchLabels [object] Метки для сопоставления, чтобы разрешить трафик от других pod'ов. Игнорируется, если `networkPolicy.allowExternal` = true.
+  ## например:
+  ## ingressPodMatchLabels:
+  ##   my-client: "true"
+  #
+  ingressPodMatchLabels: {}
+  ## @param networkPolicy.ingressNSMatchLabels [object] Метки для сопоставления, чтобы разрешить трафик из других пространств имён. Игнорируется, если `networkPolicy.allowExternal` = true.
+  ## @param networkPolicy.ingressNSPodMatchLabels [object] Метки pod'ов для сопоставления, чтобы разрешить трафик из других пространств имён. Игнорируется, если `networkPolicy.allowExternal` = true.
+  ##
+  ingressNSMatchLabels: {}
+  ingressNSPodMatchLabels: {}
+## @section Параметры метрик
+##
+
+## Метрики Prometheus
+##
+metrics:
+  ## @param metrics.enabled Включить экспорт метрик RabbitMQ для сбора Prometheus
+  ##
+  enabled: false
+  ## @param metrics.plugins Плагины для включения метрик Prometheus в RabbitMQ
+  ##
+  plugins: "rabbitmq_prometheus"
+  ## Аннотации pod'а Prometheus
+  ## @param metrics.podAnnotations [object] Аннотации для разрешения Prometheus доступаться к endpoint метрик
+  ## см.: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "{{ .Values.service.ports.metrics }}"
+  ## Service Monitor Prometheus
+  ## см.: https://github.com/coreos/prometheus-operator
+  ##
+  serviceMonitor:
+    ## @param metrics.serviceMonitor.namespace Указать пространство имён, в котором будет создан ресурс serviceMonitor
+    ##
+    namespace: ""
+    ## @param metrics.serviceMonitor.jobLabel Имя метки на целевом сервисе, используемой как имя задания в prometheus.
+    ##
+    jobLabel: ""
+    ## @param metrics.serviceMonitor.targetLabels Сохранять указанные метки сервиса в target
+    ## например:
+    ## - app.kubernetes.io/name
+    ##
+    targetLabels: {}
+    ## @param metrics.serviceMonitor.podTargetLabels Сохранять указанные метки pod'а в target
+    ## например:
+    ## - app.kubernetes.io/name
+    ##
+    podTargetLabels: {}
+    ## @param metrics.serviceMonitor.selector Метки селектора ServiceMonitor
+    ## см.: https://github.com/bitnami/charts/tree/main/bitnami/prometheus-operator#prometheus-configuration
+    ##
+    ## selector:
+    ##   prometheus: my-prometheus
+    ##
+    selector: {}
+    ## @param metrics.serviceMonitor.labels Дополнительные метки для ServiceMonitor
+    ##
+    labels: {}
+    ## @param metrics.serviceMonitor.annotations Дополнительные аннотации для ServiceMonitor
+    ##
+    annotations: {}
+    ## Собирать метрики с endpoint `/metrics`
+    ## см.: https://www.rabbitmq.com/docs/prometheus#default-endpoint
+    ##
+    default:
+      ## @param metrics.serviceMonitor.default.enabled Включить сбор метрик с endpoint (`GET /metrics`) через ServiceMonitor
+      ##
+      enabled: false
+      ## @param metrics.serviceMonitor.default.interval Интервал сбора метрик
+      ##
+      interval: 30s
+      ## @param metrics.serviceMonitor.default.scrapeTimeout Таймаут сбора метрик
+      ## например:
+      ## scrapeTimeout: 30s
+      ##
+      scrapeTimeout: ""
+      ## @param metrics.serviceMonitor.default.relabelings RelabelConfigs для применения к сэмплам до сбора.
+      ##
+      relabelings: [ ]
+      ## @param metrics.serviceMonitor.default.metricRelabelings MetricsRelabelConfigs для применения к сэмплам до инжеста.
+      ##
+      metricRelabelings: [ ]
+      ## @param metrics.serviceMonitor.default.honorLabels honorLabels выбирает метки метрики при конфликте с целевыми метками
+      ##
+      honorLabels: false
+    ## Собирать метрики с endpoint `/metrics/per-object`
+    ## см.: https://www.rabbitmq.com/docs/prometheus#per-object-endpoint
+    ##
+    perObject:
+      ## @param metrics.serviceMonitor.perObject.enabled Включить сбор метрик с endpoint (`GET /metrics/per-object`) через ServiceMonitor
+      ##
+      enabled: false
+      ## @param metrics.serviceMonitor.perObject.interval Интервал сбора метрик
+      ##
+      interval: 30s
+      ## @param metrics.serviceMonitor.perObject.scrapeTimeout Таймаут сбора метрик
+      ## например:
+      ## scrapeTimeout: 30s
+      ##
+      scrapeTimeout: ""
+      ## @param metrics.serviceMonitor.perObject.relabelings RelabelConfigs для применения к сэмплам до сбора.
+      ##
+      relabelings: [ ]
+      ## @param metrics.serviceMonitor.perObject.metricRelabelings MetricsRelabelConfigs для применения к сэмплам до инжеста.
+      ##
+      metricRelabelings: [ ]
+      ## @param metrics.serviceMonitor.perObject.honorLabels honorLabels выбирает метки метрики при конфликте с целевыми метками
+      ##
+      honorLabels: false
+    ## Собирать метрики с endpoint `/metrics/detailed`
+    ## см.: https://www.rabbitmq.com/docs/prometheus#detailed-endpoint
+    ##
+    detailed:
+      ## @param metrics.serviceMonitor.detailed.enabled Включить сбор метрик с endpoint (`GET /metrics/detailed`) через ServiceMonitor
+      ##
+      enabled: false
+      ## @param metrics.serviceMonitor.detailed.family Список семейств метрик для получения
+      ## например:
+      ## family: ["queue_coarse_metrics", "queue_consumer_count"]
+      ##
+      family: []
+      ## @param metrics.serviceMonitor.detailed.vhost Фильтровать метрики только для указанных vhost'ов
+      ##
+      vhost: []
+      ## @param metrics.serviceMonitor.detailed.interval Интервал сбора метрик
+      ##
+      interval: 30s
+      ## @param metrics.serviceMonitor.detailed.scrapeTimeout Таймаут сбора метрик
+      ## например:
+      ## scrapeTimeout: 30s
+      ##
+      scrapeTimeout: ""
+      ## @param metrics.serviceMonitor.detailed.relabelings RelabelConfigs для применения к сэмплам до сбора.
+      ##
+      relabelings: [ ]
+      ## @param metrics.serviceMonitor.detailed.metricRelabelings MetricsRelabelConfigs для применения к сэмплам до инжеста.
+      ##
+      metricRelabelings: [ ]
+      ## @param metrics.serviceMonitor.detailed.honorLabels honorLabels выбирает метки метрики при конфликте с целевыми метками
+      ##
+      honorLabels: false
+
+    ## @param metrics.serviceMonitor.enabled Устарело. Пожалуйста, используйте `metrics.serviceMonitor.{default/perObject/detailed}` вместо этого.
+    ##
+    enabled: false
+    ## @param metrics.serviceMonitor.interval Устарело. Пожалуйста, используйте `metrics.serviceMonitor.{default/perObject/detailed}` вместо этого.
+    ##
+    interval: 30s
+    ## @param metrics.serviceMonitor.scrapeTimeout Устарело. Пожалуйста, используйте `metrics.serviceMonitor.{default/perObject/detailed}` вместо этого.
+    ##
+    scrapeTimeout: ""
+    ## @param metrics.serviceMonitor.relabelings Устарело. Пожалуйста, используйте `metrics.serviceMonitor.{default/perObject/detailed}` вместо этого.
+    ##
+    relabelings: [ ]
+    ## @param metrics.serviceMonitor.metricRelabelings Устарело. Пожалуйста, используйте `metrics.serviceMonitor.{default/perObject/detailed}` вместо этого.
+    ##
+    metricRelabelings: [ ]
+    ## @param metrics.serviceMonitor.honorLabels Устарело. Пожалуйста, используйте `metrics.serviceMonitor.{default/perObject/detailed}` вместо этого.
+    ##
+    honorLabels: false
+    ## @param metrics.serviceMonitor.path Устарело. Пожалуйста, используйте `metrics.serviceMonitor.{default/perObject/detailed}` вместо этого.
+    ##
+    path: ""
+    ## @param metrics.serviceMonitor.params Устарело. Пожалуйста, используйте `metrics.serviceMonitor.{default/perObject/detailed}` вместо этого.
+    ##
+    params: { }
+
+  ## Пользовательское правило PrometheusRule
+  ## Значение оценивается как шаблон, например, оно может зависеть от .Release или .Chart
+  ## см.: https://github.com/coreos/prometheus-operator#customresourcedefinitions
+  ##
+  prometheusRule:
+    ## @param metrics.prometheusRule.enabled Установите true для создания prometheusRules для Prometheus operator
+    ##
+    enabled: false
+    ## @param metrics.prometheusRule.additionalLabels Дополнительные метки, чтобы prometheusRules были обнаружены Prometheus
+    ##
+    additionalLabels: {}
+    ## @param metrics.prometheusRule.namespace Пространство имён, где должен быть создан ресурс prometheusRules
+    ##
+    namespace: ""
+    ## Список правил, используемых как шаблон Helm.
+    ## @param metrics.prometheusRule.rules Список правил, используемых как шаблон Helm.
+    ## Это просто примеры правил, вдохновлённые https://awesome-prometheus-alerts.grep.to/rules.html
+    ## rules:
+    ##   - alert: RabbitmqDown
+    ##     expr: rabbitmq_up{service="{{ template "common.names.fullname" . }}"} == 0
+    ##     for: 5m
+    ##     labels:
+    ##       severity: error
+    ##     annotations:
+    ##       summary: Rabbitmq down (instance {{ "{{ $labels.instance }}" }})
+    ##       description: RabbitMQ node down
+    ##   - alert: ClusterDown
+    ##     expr: |
+    ##       sum(rabbitmq_running{service="{{ template "common.names.fullname" . }}"})
+    ##       < {{ .Values.replicaCount }}
+    ##     for: 5m
+    ##     labels:
+    ##       severity: error
+    ##     annotations:
+    ##       summary: Cluster down (instance {{ "{{ $labels.instance }}" }})
+    ##       description: |
+    ##           Less than {{ .Values.replicaCount }} nodes running in RabbitMQ cluster
+    ##           VALUE = {{ "{{ $value }}" }}
+    ##   - alert: ClusterPartition
+    ##     expr: rabbitmq_partitions{service="{{ template "common.names.fullname" . }}"} > 0
+    ##     for: 5m
+    ##     labels:
+    ##       severity: error
+    ##     annotations:
+    ##       summary: Cluster partition (instance {{ "{{ $labels.instance }}" }})
+    ##       description: |
+    ##           Cluster partition
+    ##           VALUE = {{ "{{ $value }}" }}
+    ##   - alert: OutOfMemory
+    ##     expr: |
+    ##       rabbitmq_node_mem_used{service="{{ template "common.names.fullname" . }}"}
+    ##       / rabbitmq_node_mem_limit{service="{{ template "common.names.fullname" . }}"}
+    ##       * 100 > 90
+    ##     for: 5m
+    ##     labels:
+    ##       severity: warning
+    ##     annotations:
+    ##       summary: Out of memory (instance {{ "{{ $labels.instance }}" }})
+    ##       description: |
+    ##           Memory available for RabbmitMQ is low (< 10%)\n  VALUE = {{ "{{ $value }}" }}
+    ##           LABELS: {{ "{{ $labels }}" }}
+    ##   - alert: TooManyConnections
+    ##     expr: rabbitmq_connectionsTotal{service="{{ template "common.names.fullname" . }}"} > 1000
+    ##     for: 5m
+    ##     labels:
+    ##       severity: warning
+    ##     annotations:
+    ##       summary: Too many connections (instance {{ "{{ $labels.instance }}" }})
+    ##       description: |
+    ##           RabbitMQ instance has too many connections (> 1000)
+    ##           VALUE = {{ "{{ $value }}" }}\n  LABELS: {{ "{{ $labels }}" }}
+    ##
+    rules: []
+## @section Параметры Init Container
+##
+
+## Параметры Init Container
+## Изменить владельца и группу точки монтирования постоянного тома(ов) на 'runAsUser:fsGroup' для каждого компонента
+## значения из секции securityContext компонента
+##
+volumePermissions:
+  ## @param volumePermissions.enabled Включить init-контейнер, который меняет владельца и группу точки монтирования постоянного тома(ов) на `runAsUser:fsGroup`
+  ##
+  enabled: false
+  ## @param volumePermissions.image.registry [по умолчанию: REGISTRY_NAME] Реестр образа init-контейнера volume-permissions
+  ## @param volumePermissions.image.repository [по умолчанию: REPOSITORY_NAME/os-shell] Репозиторий образа init-контейнера volume-permissions
+  ## @skip volumePermissions.image.tag Тег образа init-контейнера volume-permissions
+  ## @param volumePermissions.image.digest Дайджест образа init-контейнера volume-permissions в формате sha256:aa.... Обратите внимание, что этот параметр, если установлен, переопределяет тег
+  ## @param volumePermissions.image.pullPolicy Политика извлечения образа init-контейнера volume-permissions
+  ## @param volumePermissions.image.pullSecrets Укажите имена секретов docker-реестра в виде массива
+  ##
+  image:
+    registry: docker.io
+    repository: bitnami/os-shell
+    tag: 12-debian-12-r43
+    digest: ""
+    ## Укажите imagePullPolicy
+    ## см.: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
+    ##
+    pullPolicy: IfNotPresent
+    ## При необходимости укажите массив imagePullSecrets (секреты должны быть созданы вручную в пространстве имён)
+    ## см.: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## Пример:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## Запросы и лимиты ресурсов init-контейнера
+  ## см.: https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+  ## Обычно мы рекомендуем не указывать значения по умолчанию и оставлять это на усмотрение пользователя.
+  ## Это также увеличивает вероятность запуска чартов в средах с небольшими ресурсами, например, Minikube. Если вы хотите указать ресурсы, раскомментируйте строки ниже, настройте их и удалите фигурные скобки после 'resources:'.
+  ## @param volumePermissions.resourcesPreset Установить ресурсы контейнера согласно одному из пресетов (допустимые значения: none, nano, micro, small, medium, large, xlarge, 2xlarge). Игнорируется, если задан volumePermissions.resources (volumePermissions.resources рекомендуется для production).
+  ## Подробнее: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
+  ##
+  resourcesPreset: "nano"
+  ## @param volumePermissions.resources Установить запросы и лимиты ресурсов для контейнера (важно для production-нагрузок)
+  ## Пример:
+  ## resources:
+  ##   requests:
+  ##     cpu: 2
+  ##     memory: 512Mi
+  ##   limits:
+  ##     cpu: 3
+  ##     memory: 1024Mi
+  ##
+  resources: {}
+  ## Security Context init-контейнера
+  ## Примечание: chown папки данных выполняется для containerSecurityContext.runAsUser,
+  ## а не для volumePermissions.containerSecurityContext.runAsUser ниже
+  ## @param volumePermissions.containerSecurityContext.seLinuxOptions [object,nullable] Установить параметры SELinux в контейнере
+  ## @param volumePermissions.containerSecurityContext.runAsUser UID для init-контейнера
+  ##
+  containerSecurityContext:
+    seLinuxOptions: {}
+    runAsUser: 0

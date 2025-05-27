@@ -10,7 +10,7 @@ spec:
     targetRevision: HEAD
     path: keycloak
     helm:
-      chart: keycloak
+#      chart: keycloak
       valueFiles:
         - values.yaml
   destination:

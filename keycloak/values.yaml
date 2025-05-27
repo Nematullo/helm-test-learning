@@ -11,7 +11,7 @@ image:
   # The Keycloak image repository
   repository: quay.io/keycloak/keycloak
   # Overrides the Keycloak image tag whose default is the chart appVersion
-  tag: "17.0.1"
+  tag: ""
   # The Keycloak image pull policy
   pullPolicy: IfNotPresent
 
@@ -364,7 +364,7 @@ pgchecker:
     # Docker image used to check Postgresql readiness at startup
     repository: docker.io/busybox
     # Image tag for the pgchecker image
-    tag: 1.32
+    tag: 17.3.0-debian-11-r0
     # Image pull policy for the pgchecker image
     pullPolicy: IfNotPresent
   # SecurityContext for the pgchecker container

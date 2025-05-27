@@ -1,0 +1,8 @@
+postgresql:
+  enabled: false
+externalDatabase:
+  host: my-postgresql.default.svc.cluster.local
+  port: 5432
+  user: keycloak
+  password: keycloak
+  database: keycloak

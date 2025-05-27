@@ -1,0 +1,34 @@
+keycloak:
+  replicaCount: 1
+  image:
+    repository: quay.io/keycloak/keycloak
+    tag: 21.1.1
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 8079
+
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: standard
+
+  # Конфигурация для подключения к PostgreSQL
+  database:
+    vendor: postgres
+    host: keycloak-postgresql
+    port: 5432
+    user: keycloak
+    password: keycloakpassword
+    dbname: keycloakdb
+
+postgresql:
+  enabled: true
+  postgresqlUsername: keycloak
+  postgresqlPassword: keycloakpassword
+  postgresqlDatabase: keycloakdb
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: standard

@@ -12,7 +12,7 @@ spec:
     path: rabbitmq
     helm:
       valueFiles:
-        - neo-values.yaml
+        - values.yaml
 
   destination:
     server: 'https://kubernetes.default.svc'

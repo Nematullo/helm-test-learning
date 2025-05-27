@@ -1,8 +1,8 @@
 # Optionally override the fully qualified name
-fullnameOverride: "kk"
+fullnameOverride: ""
 
 # Optionally override the name
-nameOverride: "kk"
+nameOverride: ""
 
 # The number of replicas to create (has no effect if autoscaling enabled)
 replicas: 1

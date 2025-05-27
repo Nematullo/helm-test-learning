@@ -1,0 +1,19 @@
+config:
+  secret:
+    argocdServerAdminPassword: "$2a$10$WUwEwO4Yo6RNPYZVzNIMiOJ9pITzNxlVvQOTNWkxxdTJ1MSV/H4lG"  # bcrypt-хеш
+    argocdServerAdminPasswordMtime: "2025-05-27T12:00:00Z"
+
+
+
+
+#secret:
+#  create: true
+#  clearPassword: eW91ci1uZXctcGFzc3dvcmQ=
+
+#your_secure_password
+
+
+server:
+  service:
+    type: NodePort
+    nodePort: 30080

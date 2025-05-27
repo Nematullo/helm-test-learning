@@ -1,0 +1,15 @@
+replicaCount: 1
+keycloak:
+  username: admin
+  password: admin
+  extraEnv: 
+    - name: KEYCLOAK_LOGLEVEL
+      value: DEBUG
+
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: postgres
+    username: keycloak
+    password: keycloak
+    database: keycloak

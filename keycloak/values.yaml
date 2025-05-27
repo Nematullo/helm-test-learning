@@ -362,7 +362,7 @@ route:
 pgchecker:
   image:
     # Docker image used to check Postgresql readiness at startup
-    repository: docker.io/busybox
+    repository: bitnami/postgresql
     # Image tag for the pgchecker image
     tag: 17.3.0-debian-11-r0
     # Image pull policy for the pgchecker image

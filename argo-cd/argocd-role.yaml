@@ -1,0 +1,10 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: argocd-cm-reader
+  namespace: default
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  resourceNames: ["argocd-cm"]
+  verbs: ["get", "list", "watch"]

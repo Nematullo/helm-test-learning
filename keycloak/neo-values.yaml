@@ -1,44 +1,29 @@
 # Global PostgreSQL settings
-#global:
-#  postgresql:
-#    auth:
-#      username: bn_keycloak
-#      password: bn_keycloak
-#      database: bitnami_keycloak
+global:
+  postgresql:
+    auth:
+      username: bn_keycloak
+      password: bn_keycloak
+      database: bitnami_keycloak
 
 # Keycloak Admin User Configuration
 auth:
   adminUser: admin
   adminPassword: admin
 
-image:
-  registry: quay.io
-  repository: keycloak/keycloak
-  tag: 24.0.4
-  pullPolicy: IfNotPresent
-
-postgresql:
-  enabled: false
-externalDatabase:
-  host: my-postgresql.default.svc.cluster.local
-  port: 5432
-  user: keycloak
-  password: keycloak
-  database: keycloak
-
 # PostgreSQL Specific Configuration
-#postgresql:
-#  enabled: true
-#  auth:
-#    username: bn_keycloak
-#    password: bn_keycloak
-#    database: bitnami_keycloak
+postgresql:
+  enabled: true
+  auth:
+    username: bn_keycloak
+    password: bn_keycloak
+    database: bitnami_keycloak
 
 # Kubernetes Service Configuration
 service:
   type: NodePort
   nodePorts:
-    http: 30085
+    http: 30080
 
 # Additional Keycloak Environment Variables
 extraEnvVars:

@@ -23,7 +23,7 @@ postgresql:
 service:
   type: NodePort
   nodePorts:
-    http: 30080
+    http: 30085
 
 # Additional Keycloak Environment Variables
 extraEnvVars:

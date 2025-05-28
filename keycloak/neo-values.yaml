@@ -13,9 +13,9 @@ auth:
 
 image:
   registry: quay.io
-  repository: keycloak/keycloak:
+  repository: keycloak/keycloak
   tag: 24.0.4
-  
+
 # PostgreSQL Specific Configuration
 postgresql:
   enabled: true

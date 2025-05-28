@@ -1,0 +1,19 @@
+#image:
+  # Изменим репозиторий на официальный Docker Hub
+#  repository: docker.io/bitnami/keycloak
+  # Укажем стабильный тег
+#  tag: 24.0.3
+  # Политика подтягивания образа
+#  pullPolicy: IfNotPresent
+
+
+
+
+postgresql:
+  enabled: false
+externalDatabase:
+  host: my-postgresql.default.svc.cluster.local
+  port: 5432
+  user: keycloak
+  password: keycloak
+  database: keycloak

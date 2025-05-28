@@ -1,19 +1,39 @@
-#image:
-  # Изменим репозиторий на официальный Docker Hub
-#  repository: docker.io/bitnami/keycloak
-  # Укажем стабильный тег
-#  tag: 24.0.3
-  # Политика подтягивания образа
-#  pullPolicy: IfNotPresent
+# Global PostgreSQL settings
+global:
+  postgresql:
+    auth:
+      username: bn_keycloak
+      password: bn_keycloak
+      database: bitnami_keycloak
 
+# Keycloak Admin User Configuration
+auth:
+  adminUser: admin
+  adminPassword: admin
 
-
-
+# PostgreSQL Specific Configuration
 postgresql:
-  enabled: false
-externalDatabase:
-  host: my-postgresql.default.svc.cluster.local
-  port: 5432
-  user: keycloak
-  password: keycloak
-  database: keycloak
+  enabled: true
+  auth:
+    username: bn_keycloak
+    password: bn_keycloak
+    database: bitnami_keycloak
+
+# Kubernetes Service Configuration
+service:
+  type: NodePort
+  nodePorts:
+    http: 30085
+
+# Additional Keycloak Environment Variables
+extraEnvVars:
+  - name: KC_PRODUCTION
+    value: "true"
+  - name: KC_HOSTNAME_STRICT
+    value: "false"
+  - name: KC_HTTP_ENABLED
+    value: "true"
+  - name: VERTX_WORKER_POOL_SIZE
+    value: "20"
+  - name: VERTX_EVENT_LOOP_POOL_SIZE
+    value: "8"

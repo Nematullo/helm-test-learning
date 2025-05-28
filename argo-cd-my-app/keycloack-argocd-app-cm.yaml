@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  url: https://localhost:8080
+  oidc.config: |
+    name: Keycloak
+    issuer: http://192.168.49.2:30085/realms/master
+    #issuer: http://keycloak-headless.argocd.svc.cluster.local:8080/realms/master
+    clientID: argocd
+    clientSecret: hyMsqikAkBVgzd7l4YSPoqR1XioVHpIs
+    requestedScopes: ["openid", "profile", "email", "groups"]

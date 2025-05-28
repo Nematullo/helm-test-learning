@@ -12,15 +12,15 @@ spec:
     path: rabbitmq
     helm:
       valueFiles:
-        - values.yaml
+        - neo-values.yaml
 
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: default
+    namespace: argocd
 
   syncPolicy:
     automated:
-      prune: false       # Удаляет ресурсы, которых больше нет в Git
+      prune: true       # Удаляет ресурсы, которых больше нет в Git
       selfHeal: true    # Восстанавливает удалённые или изменённые вручную ресурсы
     syncOptions:
     - CreateNamespace=true

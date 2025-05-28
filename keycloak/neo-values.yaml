@@ -1,3 +1,14 @@
+image:
+  # Изменим репозиторий на официальный Docker Hub
+  repository: docker.io/bitnami/keycloak
+  # Укажем стабильный тег
+  tag: 24.0.3
+  # Политика подтягивания образа
+  pullPolicy: IfNotPresent
+
+
+
+
 postgresql:
   enabled: false
 externalDatabase:

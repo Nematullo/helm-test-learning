@@ -1,8 +1,6 @@
-# /home/neo/Документы/helm-test-learning/bitnami-charts/minio/values.yaml
-
-image:
-  repository: docker.io/bitnami/minio
-  tag: 16.0.10 # Или версия, которую вы загрузили
+#image:
+#  repository: docker.io/bitnami/minio
+#  tag: 16.0.10 # Или версия, которую вы загрузили
 
 service:
   type: NodePort # Используем NodePort

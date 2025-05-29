@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: mon # Убедитесь, что это имя соответствует имени вашего проекта (mon или monitoring)
+  namespace: argocd # Namespace, где установлен ArgoCD
+spec:
+  description: 'Project for monitoring infrastructure (Loki, Mimir, Grafana)'
+  # Разрешить развертывание в определенных namespaces
+  destinations:
+    - namespace: loki
+      server: https://kubernetes.default.svc
+    - namespace: mimir
+      server: https://kubernetes.default.svc
+    - namespace: minio
+      server: https://kubernetes.default.svc
+    - namespace: default # Если вы развертываете что-то в default
+      server: https://kubernetes.default.svc
+  sourceRepos:
+    - 'https://grafana.github.io/helm-charts' # Разрешить Helm-чарты Grafana
+    - 'https://charts.bitnami.com/bitnami'   # Разрешить Helm-чарты Bitnami
+    - 'https://github.com/your-username/my-argocd-config' # Ваш Git-репозиторий
+    # Добавьте любые другие репозитории, которые вы используете
+
+  # *** ЭТА СЕКЦИЯ КРИТИЧЕСКИ ВАЖНА ДЛЯ ВАШЕЙ ПРОБЛЕМЫ ***
+  clusterResourceWhitelist:
+    - group: 'rbac.authorization.k8s.io'
+      kind: 'ClusterRole'
+    - group: 'rbac.authorization.k8s.io'
+      kind: 'ClusterRoleBinding'
+    # Добавьте другие кластерные ресурсы, если ваши чарты будут их создавать (например, CustomResourceDefinitions)
+    # - group: 'apiextensions.k8s.io'
+    #   kind: 'CustomResourceDefinition'
+
+  # Namespaced ресурсы обычно разрешены по умолчанию, но вы можете их явно указать, если хотите ограничить.
+  # Если вы хотите ограничить, то нужно будет перечислить все необходимые.
+  # resourceWhitelist:
+  #   - group: '*'
+  #     kind: '*'

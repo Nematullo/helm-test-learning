@@ -1,0 +1,12 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: mon # Или 'monitoring', в зависимости от того, как вы его назвали
+  namespace: argocd
+spec:
+  # ... остальные ваши настройки ...
+  clusterResourceWhitelist:
+    - group: 'rbac.authorization.k8s.io'
+      kind: 'ClusterRole'
+    - group: 'rbac.authorization.k8s.io'
+      kind: 'ClusterRoleBinding'

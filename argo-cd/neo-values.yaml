@@ -1,22 +1,54 @@
+# /путь/к/вашему/values.yaml
+# Это полный файл values.yaml, который вы должны использовать для helm upgrade
+
 configs:
   secret:
     createSecret: true
-    argocdServerAdminPassword: "$2y$10$3VR3SItUubpvZNLHhC7YxuI9ujArMEX5cA3zIbpTz8lTpLBBHPaJ2"
-    argocdServerAdminPasswordMtime: "2025-05-26T00:00:00Z"
-    clearPassword: "11221122"   # вот этот ключ нужно добавить
-
+    # Используйте только ваш НОВЫЙ захэшированный пароль.
+    # Удалите clearPassword, так как оно не нужно, если вы используете захэшированный пароль.
+    argocdServerAdminPassword: "$2a$10$8kQw3poG1LPTAR9/EqYsnuslwhCOKkS3vcucSyKaNno0pLUzkcwkK" # Ваш новый хэш
+    argocdServerAdminPasswordMtime: "2025-05-29T09:05:00Z" # Пример: 09:05 UTC (это прошлое время)
   cm:
     admin.enabled: true
+    # ОЧЕНЬ ВАЖНО: Убедитесь, что эти настройки OIDC корректны
+    oidc.config: |
+      name: Keycloak
+      issuer: http://192.168.49.2:30085/realms/master # Если Keycloak в кластере, лучше использовать ClusterIP Service Name (например, http://keycloak-headless.argocd.svc.cluster.local:8080/realms/master)
+      clientID: argocd
+      clientSecret: hyMsqikAkBVgzd7l4YSPoqR1XioVHpIs
+      requestedScopes: ["openid", "profile", "email", "groups"]
+      # ЭТО КРИТИЧЕСКИ ВАЖНО: Укажите точное имя клейма, где Keycloak передает группы.
+      # Если это "groups" (по умолчанию), то так и оставьте. Иначе, измените.
+      groupClaim: groups # ПРИМЕР: realm_access.roles или resource_access.argocd.roles
+    # ЭТО КРИТИЧЕСКИ ВАЖНО: Публичный URL вашей инсталляции Argo CD
+    url: http://192.168.49.2:30080 # ЗАМЕНИТЕ НА ВАШ РЕАЛЬНЫЙ ПУБЛИЧНЫЙ URL (например, https://argocd.mydomain.com)
 
   params:
-    server.insecure: true
+    server.insecure: true # В продакшене это должно быть false и настроен TLS
 
   rbac:
-    policy.default: role:readonly
+    policy.default: "" # Рекомендую оставить пустым, чтобы явно задавать права. Если хотите readonly по умолчанию, поставьте role:readonly
     policy.csv: |
-      g, admin, role:admin
+      g, ArgoCDAdmins, role:admin
+      g, ArgoCD_dev, role:project-dev
+      g, ArgoCD_prod, role:project-prod
+      g, ArgoCDAdmins2, role:admin
 
+      p, role:project-dev, projects, get, dev, allow
+      p, role:project-dev, applications, get, dev/*, allow # Просмотр
+      p, role:project-dev, applications, sync, dev/*, allow # Синхронизация
+      p, role:project-dev, applications, delete, dev/*, deny # Рекомендуется явно запретить удаление
+      p, role:project-dev, repositories, get, *, allow
+      p, role:project-dev, clusters, get, *, allow # Часто полезно для просмотра кластеров
 
+      p, role:project-prod, projects, get, prod, allow
+      p, role:project-prod, applications, get, prod/*, allow # Просмотр
+      p, role:project-prod, applications, sync, prod/*, allow # Синхронизация
+      p, role:project-prod, applications, delete, prod/*, deny # ОЧЕНЬ РЕКОМЕНДУЕТСЯ ЯВНО ЗАПРЕТИТЬ УДАЛЕНИЕ В ПРОДЕ
+      p, role:project-prod, repositories, get, *, allow
+      p, role:project-prod, clusters, get, *, allow # Часто полезно для просмотра кластеров
+    policy.matchMode: glob
+    # scopes: '[groups]' # Эту строку нужно удалить, она не принадлежит rbac-cm
 
 server:
   service:
@@ -45,19 +77,20 @@ dex:
       http: 30556
       grpc: 30557
 
-redis:
-  auth:
-    existingSecret: argocd-redis
+#redis:
+#  auth:
+#    existingSecret: argocd-redis
 
-
-redis:
-  enabled: true
-  architecture: standalone
-  auth:
-    enabled: true
-    password: "11221122"
-  master:
-    service:
-      type: NodePort
-      port: 6379
-      nodePort: 30639
+# Закомментированная секция redis (если она была в вашем исходном values.yaml)
+# Если вы используете существующий Secret для Redis, эта секция может быть не нужна
+# redis:
+#   enabled: true
+#   architecture: standalone
+#   auth:
+#     enabled: true
+#     password: "11221122" # Этот пароль должен быть в argocd-redis Secret
+#   master:
+#     service:
+#       type: NodePort
+#       port: 6379
+#       nodePort: 30639

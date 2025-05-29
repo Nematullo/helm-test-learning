@@ -2,27 +2,23 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: argocd-rbac-cm
-  namespace: argocd # Убедитесь, что это ваш неймспейс Argo CD
-data:
-  rbac.enabled: "true" # Обязательно включите RBAC
-
-  policy.csv: |
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: argocd-rbac-cm
   namespace: argocd
 data:
   policy.csv: |
+    # Группа админов — полный доступ
     g, ArgoCDAdmins, role:admin
-    g, ArgoCD_dev, role:project-dev
-    g, ArgoCD_prod, role:project-prod
-    g, ArgoCDAdmins2, role:admin
 
+    # Группа dev — роль project-dev
+    g, ArgoCD_dev, role:project-dev
+    # Группа prod — роль project-prod
+    g, ArgoCD_prod, role:project-prod
+
+    # Роль project-dev: доступ только к dev проекту
     p, role:project-dev, projects, get, dev, allow
     p, role:project-dev, applications, *, dev/*, allow
     p, role:project-dev, repositories, get, *, allow
 
+    # Роль project-prod: доступ только к prod проекту
     p, role:project-prod, projects, get, prod, allow
     p, role:project-prod, applications, *, prod/*, allow
     p, role:project-prod, repositories, get, *, allow

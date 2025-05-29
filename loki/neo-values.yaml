@@ -1,0 +1,32 @@
+loki:
+  service:
+    type: ClusterIP # Loki обычно использует ClusterIP
+    port: 3100 # Порт Loki (не меняйте)
+
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+  persistence:
+    enabled: true
+    size: 20Gi # Размер PersistentVolumeClaim для Loki
+    storageClass: standard
+
+promtail:
+  enabled: true # Promtail должен быть включен
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+grafana:
+  enabled: false # Рекомендуется развертывать Grafana отдельно
+
+fullnameOverride: "loki-stack" # Постоянное имя для ресурсов Loki

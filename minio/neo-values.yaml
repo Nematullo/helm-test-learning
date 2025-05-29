@@ -1,0 +1,25 @@
+# /home/neo/Документы/helm-test-learning/bitnami-charts/minio/values.yaml
+
+image:
+  repository: docker.io/bitnami/minio
+  tag: 16.0.10 # Или версия, которую вы загрузили
+
+service:
+  type: NodePort # Используем NodePort
+  nodePort: 30090 # Выберите доступный NodePort (30000-32767)
+  port: 9000 # Порт внутри кластера (не меняйте)
+
+resources:
+  requests:
+    cpu: 100m # 100 миллиядер
+    memory: 128Mi # 128 мегабайт
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+persistence:
+  enabled: true
+  size: 10Gi # Размер PersistentVolumeClaim
+  storageClass: standard # Или ваш StorageClass
+
+fullnameOverride: "minio" # Постоянное имя для ресурсов MinIO

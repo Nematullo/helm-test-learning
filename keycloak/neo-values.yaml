@@ -43,14 +43,14 @@ extraEnvVars:
     value: "8"
 
 
-resources:
-  requests:
+#resources:
+#  requests:
     # Запрос на 256 мегабайт памяти
-    memory: 512i
+#    memory: 512i
     # Можно также добавить запрос на CPU, если нужно, например, 0.1 CPU
-    cpu: 1
-  limits:
+    #cpu: 1
+#  limits:
     # Лимит на 256 мегабайт памяти
-    memory: 1024i
+    #memory: 1024i
     # Можно также добавить лимит на CPU, если нужно, например, 0.2 CPU
-    cpu: 1
+    #cpu: 1

@@ -46,11 +46,11 @@ extraEnvVars:
 resources:
   requests:
     # Запрос на 256 мегабайт памяти
-    memory: 200Mi
+    memory: 400Mi
     # Можно также добавить запрос на CPU, если нужно, например, 0.1 CPU
     cpu: 100m
   limits:
     # Лимит на 256 мегабайт памяти
-    memory: 300Mi
+    memory: 500Mi
     # Можно также добавить лимит на CPU, если нужно, например, 0.2 CPU
     cpu: 400m

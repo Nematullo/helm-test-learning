@@ -1,7 +1,8 @@
 #image:
 #  repository: docker.io/bitnami/minio
 #  tag: 16.0.10 # Или версия, которую вы загрузили
-
+  replicaCount: 1
+  
 service:
   type: NodePort # Используем NodePort
   nodePort: 30090 # Выберите доступный NodePort (30000-32767)

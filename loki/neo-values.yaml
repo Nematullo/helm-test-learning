@@ -1,22 +1,31 @@
 loki:
   service:
-    type: ClusterIP
+    type: NodePort
     port: 3100
+    nodePort: 30100 # Выберите доступный NodePort (30000-32767)
 
-  resources:
-    requests:
-      cpu: 200m
-      memory: 256Mi
-    limits:
-      cpu: 1000m
-      memory: 1Gi
+resources: {}
+ limits:
+   cpu: 200m
+   memory: 256Mi
+ requests:
+   cpu: 100m
+   memory: 128Mi
+
+#  resources:
+#    requests:
+#      cpu: 200m
+#      memory: 256Mi
+#    limits:
+#      cpu: 1000m
+#      memory: 1Gi
 
   persistence:
     enabled: true
     size: 20Gi
     storageClass: standard
   
-  replicaCount: 0 # <-- ПЕРЕНЕСЕНО СЮДА, ВНУТРЬ СЕКЦИИ LOKI
+  replicaCount: 1 # <-- ПЕРЕНЕСЕНО СЮДА, ВНУТРЬ СЕКЦИИ LOKI
   # Если чарт Loki имеет отдельные компоненты (например, 'loki-gateway', 'loki-read', 'loki-write'),
   # возможно, для них тоже нужно установить replicaCount: 0 или enabled: false.
   # Проверьте values.yaml самого чарта Loki.

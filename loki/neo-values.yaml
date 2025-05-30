@@ -2,7 +2,7 @@ loki:
   service:
     type: NodePort
     port: 3100
-    nodePort: 30100 # Выберите доступный NodePort (30000-32767)
+    nodePort: 30099 # Выберите доступный NodePort (30000-32767)
 
   # Правильное расположение секции resources
   resources:

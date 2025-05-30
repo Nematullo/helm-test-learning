@@ -25,3 +25,5 @@ service:
 
 management:
   enabled: true
+
+replicaCount: 0

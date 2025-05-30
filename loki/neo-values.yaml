@@ -1,7 +1,7 @@
 loki:
   service:
-    type: ClusterIP # Loki обычно использует ClusterIP
-    port: 3100 # Порт Loki (не меняйте)
+    type: ClusterIP
+    port: 3100
 
   resources:
     requests:
@@ -13,11 +13,17 @@ loki:
 
   persistence:
     enabled: true
-    size: 20Gi # Размер PersistentVolumeClaim для Loki
+    size: 20Gi
     storageClass: standard
+  
+  replicaCount: 0 # <-- ПЕРЕНЕСЕНО СЮДА, ВНУТРЬ СЕКЦИИ LOKI
+  # Если чарт Loki имеет отдельные компоненты (например, 'loki-gateway', 'loki-read', 'loki-write'),
+  # возможно, для них тоже нужно установить replicaCount: 0 или enabled: false.
+  # Проверьте values.yaml самого чарта Loki.
+
 
 promtail:
-  enabled: true # Promtail должен быть включен
+  enabled: false # <-- Изменено на false для отключения Promtail
   resources:
     requests:
       cpu: 100m
@@ -26,7 +32,9 @@ promtail:
       cpu: 500m
       memory: 512Mi
 
-grafana:
-  enabled: false # Рекомендуется развертывать Grafana отдельно
+# replicaCount: 0 # <-- ЭТУ СТРОКУ УДАЛИТЕ ОТСЮДА
 
-fullnameOverride: "loki-stack" # Постоянное имя для ресурсов Loki
+grafana:
+  enabled: false # Правильно, Grafana отключена
+
+fullnameOverride: "loki-stack"

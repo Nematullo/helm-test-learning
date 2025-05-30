@@ -24,3 +24,5 @@ replica:
     nodePort: 30090
 sentinel:
   enabled: false
+
+  replicaCount: 0

@@ -32,7 +32,7 @@ promtail:
       cpu: 500m
       memory: 512Mi
 
-# replicaCount: 0 # <-- ЭТУ СТРОКУ УДАЛИТЕ ОТСЮДА
+# replicaCount: 1 # <-- ЭТУ СТРОКУ УДАЛИТЕ ОТСЮДА
 
 grafana:
   enabled: false # Правильно, Grafana отключена

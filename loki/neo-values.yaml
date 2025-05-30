@@ -4,35 +4,25 @@ loki:
     port: 3100
     nodePort: 30100 # Выберите доступный NodePort (30000-32767)
 
-resources: {}
- limits:
-   cpu: 200m
-   memory: 256Mi
- requests:
-   cpu: 100m
-   memory: 128Mi
-
-#  resources:
-#    requests:
-#      cpu: 200m
-#      memory: 256Mi
-#    limits:
-#      cpu: 1000m
-#      memory: 1Gi
+  # Правильное расположение секции resources
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
 
   persistence:
     enabled: true
     size: 20Gi
     storageClass: standard
   
-  replicaCount: 1 # <-- ПЕРЕНЕСЕНО СЮДА, ВНУТРЬ СЕКЦИИ LOKI
-  # Если чарт Loki имеет отдельные компоненты (например, 'loki-gateway', 'loki-read', 'loki-write'),
-  # возможно, для них тоже нужно установить replicaCount: 0 или enabled: false.
-  # Проверьте values.yaml самого чарта Loki.
-
+  # replicaCount должен находиться внутри секции 'loki:'
+  replicaCount: 1 
 
 promtail:
-  enabled: false # <-- Изменено на false для отключения Promtail
+  enabled: false # Отключаем Promtail
   resources:
     requests:
       cpu: 100m
@@ -41,9 +31,7 @@ promtail:
       cpu: 250m
       memory: 412Mi
 
-# replicaCount: 1 # <-- ЭТУ СТРОКУ УДАЛИТЕ ОТСЮДА
-
 grafana:
-  enabled: false # Правильно, Grafana отключена
+  enabled: false # Grafana отключена
 
 fullnameOverride: "loki-stack"

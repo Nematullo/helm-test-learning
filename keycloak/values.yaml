@@ -292,7 +292,7 @@ extraEnvVarsSecret: ""
 
 ## @param replicaCount Number of Keycloak replicas to deploy
 ##
-replicaCount: 0
+replicaCount: 1
 ## @param revisionHistoryLimitCount Number of controller revisions to keep
 ##
 revisionHistoryLimitCount: 10

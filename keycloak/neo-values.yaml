@@ -11,13 +11,13 @@ auth:
   adminUser: admin
   adminPassword: admin
 
-replicaCount: 0 # Отключаем основной Keycloak
+replicaCount: 1 # Отключаем основной Keycloak
 
 
 # PostgreSQL Specific Configuration
 postgresql:
   enabled: true
-  replicaCount: 0
+  replicaCount: 1
   auth:
     username: bn_keycloak
     password: bn_keycloak
@@ -43,13 +43,14 @@ extraEnvVars:
     value: "8"
 
 
-containers:
-  - name: argocd-application-controller # Проверьте имя контейнера, возможно, оно другое
-    # ...
-    resources:
-      requests:
-        memory: "90Mi"
-        cpu: "100m"
-      limits:
-        memory: "130Mi"
-        cpu: "200m"
+resources:
+  requests:
+    # Запрос на 256 мегабайт памяти
+    memory: 256Mi
+    # Можно также добавить запрос на CPU, если нужно, например, 0.1 CPU
+    cpu: 100m
+  limits:
+    # Лимит на 256 мегабайт памяти
+    memory: 256Mi
+    # Можно также добавить лимит на CPU, если нужно, например, 0.2 CPU
+    cpu: 200m

@@ -745,7 +745,7 @@ sidecars: []
 service:
   ## @param service.type MinIO&reg; service type
   ##
-  type: ClusterIP
+  type: NodePort
   ## @param service.ports.api MinIO&reg; API service port
   ## @param service.ports.console MinIO&reg; Console service port
   ##
@@ -757,8 +757,8 @@ service:
   ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
   ##
   nodePorts:
-    api: ""
-    console: ""
+    api: "30090"
+    console: "30091"
   ## @param service.clusterIP Service Cluster IP
   ## e.g.:
   ## clusterIP: None

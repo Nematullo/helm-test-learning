@@ -1,0 +1,26 @@
+# /path/to/where/you/store/argocd-app-definitions/argocd-current-time-app.yaml
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: current-time-app    # Имя вашей Argo CD Application
+  namespace: argocd          # Неймспейс, где установлен Argo CD (обычно 'argocd')
+spec:
+  project: default           # Проект Argo CD, к которому относится это приложение (можно создать свой)
+  source:
+    repoURL: https://github.com/your-username/kubernetes-configs.git # URL вашего Git-репозитория
+    targetRevision: HEAD     # Ветка или тег для синхронизации (например, 'main', 'HEAD', 'v1.0')
+    path: current-time-app   # Путь внутри репозитория, где находится ваш Deployment
+
+  destination:
+    server: https://kubernetes.default.svc  # URL API-сервера вашего кластера (для кластера, где работает Argo CD)
+    namespace: default                      # Неймспейс, куда Argo CD будет разворачивать ресурсы
+
+  syncPolicy:
+    automated:               # Включаем автоматическую синхронизацию
+      prune: true            # Разрешаем Argo CD удалять ресурсы, отсутствующие в Git
+      selfHeal: true         # Разрешаем Argo CD автоматически восстанавливать состояние, если оно отклонилось от Git
+
+    # Дополнительные опции, если нужны
+    # syncOptions:
+    #   - CreateNamespace=true # Если неймспейс `default` не существует, Argo CD его создаст

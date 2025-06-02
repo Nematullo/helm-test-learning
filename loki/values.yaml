@@ -94,7 +94,7 @@ logstash:
     main: |-
       output {
         loki {
-          url => "http://loki:3100/loki/api/v1/push"
+          url => "http://loki-mon.argocd.svc.cluster.local:3100/loki/api/v1/push"
           #username => "test"
           #password => "test"
         }

@@ -1,0 +1,133 @@
+# Описание объекта Deployment, который управляет созданием и обновлением наборов Pod'ов
+apiVersion: apps/v1       # Версия API Kubernetes для Deployment
+kind: Deployment          # Тип объекта — Deployment
+
+metadata:
+  name: current-time      # Имя этого Deployment — уникальный идентификатор в namespace
+
+spec:
+  replicas: 1             # Сколько копий (подов) запустить одновременно — 3
+
+  selector:
+    matchLabels:
+      app: current-time   # Как выбрать поды, которые контролирует этот Deployment (метка app=current-time)
+
+  template:               # Шаблон для создаваемых подов
+    metadata:
+      labels:
+        app: current-time # Метка, которая будет присвоена создаваемым подам — нужна для связывания с селектором и сервисом
+
+    spec:                 # Описание пода и его контейнеров
+      containers:
+      - name: current-time
+        image: neorld/current-time:latest
+#        command: ["/bin/sh", "-c"]
+#        args:
+#          - mkdir -p /var/log/current-time && sleep 3600
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log/current-time
+        command: [ "python" ]
+        args: [ "current_time.py" ]
+
+#      - name: current-time               # Имя контейнера внутри пода (может быть любое удобное)
+#        image: neorld/current-time:latest  # Образ Docker, который будет использоваться для запуска контейнера
+#        ports:
+#        - containerPort: 1001            # Порт внутри контейнера, на котором слушает приложение
+#        imagePullPolicy: Always          # Правило: всегда тянуть свежий образ при запуске (обновлять с DockerHub)
+
+#      - name: vector
+#        image: timberio/vector:0.27.0-debian
+#        args: ["-c", "/etc/vector/vector.toml"]
+#        volumeMounts:
+#        - name: vector-config
+#          mountPath: /etc/vector
+#        - name: varlog
+#          mountPath: /var/log/current-time
+#        - name: varlogpods
+#          mountPath: /var/log/pods
+#          readOnly: true
+
+#      - name: node-exporter
+#        image: prom/node-exporter:latest
+#        args:
+#        - --path.rootfs=/host/root
+#        ports:
+#        - containerPort: 9100
+#        volumeMounts:
+#        - name: rootfs
+#          mountPath: /host/root
+#          readOnly: true
+
+      volumes:                      # вот здесь, ровно на одном уровне с containers!
+      - name: varlog
+        emptyDir: {}
+
+      - name: vector-config
+        configMap:
+          name: vector-config
+
+      - name: varlogpods
+        hostPath:
+          path: /var/log/pods
+          type: Directory
+
+      - name: rootfs
+        hostPath:
+          path: /
+          type: Directory
+---
+
+
+
+# Описание сервиса Kubernetes, который открывает доступ к подам снаружи кластера
+apiVersion: v1               # Версия API Kubernetes для Service
+kind: Service                # Тип объекта — Service (служба)
+
+metadata:
+  name: current-time-service # Имя сервиса, по которому мы будем обращаться к приложению
+
+spec:
+  type: NodePort             # Тип сервиса — NodePort позволяет обращаться к сервису через IP любой ноды кластера и фиксированный порт
+
+  selector:
+    app: current-time        # Связывает сервис с подами, у которых есть метка app=current-time (тот же, что в Deployment)
+
+  ports:
+    - protocol: TCP          # Протокол связи (TCP)
+      port: 1001            # Порт, на котором сервис слушает внутри кластера (для других сервисов и подов)
+      targetPort: 1001      # Порт на контейнерах, на который перенаправляется трафик (тот же, что containerPort)
+      nodePort: 31001       # Внешний порт на нодах, через который можно достучаться к сервису извне (открытый порт)
+
+---
+#apiVersion: apps/v1
+#kind: DaemonSet
+#metadata:
+#  name: node-exporter
+#  labels:
+#    app: node-exporter
+#spec:
+#  selector:
+#    matchLabels:
+#      app: node-exporter
+#  template:
+#    metadata:
+#      labels:
+#        app: node-exporter
+#    spec:
+#      containers:
+#      - name: node-exporter
+#        image: prom/node-exporter:latest
+#        args:
+#        - --path.rootfs=/host/root
+#        ports:
+#        - containerPort: 9100
+#        volumeMounts:
+#        - name: rootfs
+#          mountPath: /host/root
+#          readOnly: true
+#      volumes:
+#      - name: rootfs
+#        hostPath:
+#          path: /
+#          type: Directory

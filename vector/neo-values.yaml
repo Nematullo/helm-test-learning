@@ -1,0 +1,55 @@
+# values.yaml для вашего Helm-чарта Vector
+
+agent:
+  # Если чарт позволяет напрямую передавать содержимое vector.toml или vector.yaml
+  # В данном случае, мы хотим сгенерировать TOML
+  config: |
+    [sources.kubernetes_logs]
+    type = "file"
+    include = ["/var/log/current-time/*.log"]
+    ignore_older = 86400
+
+    [sinks.loki]
+    type = "loki"
+    inputs = ["kubernetes_logs"]
+    endpoint = "http://loki-mon.argocd.svc.cluster.local:3100/loki/api/v1/push" # Изменено: используем имя сервиса loki в Kubernetes
+    encoding.codec = "json"
+
+    [sinks.loki.labels]
+    job = "current-time"
+
+    [sinks.console]
+    type = "console"
+    inputs = ["kubernetes_logs"]
+    encoding.codec = "json"
+
+  # Другие возможные настройки чарта Vector (если они есть)
+  # Например, ресурсы, tolerations, nodeSelector и т.д.
+   resources:
+     limits:
+       cpu: 100m
+       memory: 128Mi
+     requests:
+       cpu: 50m
+       memory: 64Mi
+
+  service:
+    enabled: true        # Включаем создание сервиса
+    type: NodePort       # Устанавливаем тип сервиса NodePort
+    port: 8686           # Порт, который будет слушать сервис внутри кластера (Container Port Vector'а)
+    targetPort: 8686     # Порт на поде, куда направляется трафик (обычно это порт метрик Vector'а по умолчанию)
+    nodePort: 30101      # Желаемый NodePort. Должен быть в диапазоне 30000-32767.
+  # Это пример, если чарт Vector позволяет напрямую управлять источниками
+  # Например, если он имеет встроенные шаблоны для сбора логов K8s,
+  # но в вашем случае вы явно указали file source.
+  # sources:
+  #   kubernetes:
+  #     enabled: false # Отключаем стандартный сбор логов K8s, если он есть,
+  #                     # так как мы используем свой file source
+
+# Если у вас есть сервис Loki в том же кластере,
+# вам нужно убедиться, что он доступен по имени сервиса.
+# Обычно это `loki` в его собственном неймспейсе или `loki.loki-namespace.svc.cluster.local`
+# Если Loki установлен в том же неймспейсе, достаточно `http://loki:3100`
+# Если Loki находится в другом неймспейсе, например, `loki-stack`, то endpoint будет `http://loki.loki-stack.svc.cluster.local:3100`
+# Я использовал `http://loki:3100` как наиболее распространенный вариант.

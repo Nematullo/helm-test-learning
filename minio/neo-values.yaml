@@ -15,10 +15,9 @@ service:
       targetPort: 9001 # Консоль MinIO прослушивает порт 9001
       nodePort: 30091
 
-#service:
-#  type: NodePort # Используем NodePort
-#  nodePort: 30090 # Выберите доступный NodePort (30000-32767)
-#  port: 9000 # Порт внутри кластера (не меняйте)
+auth:
+  rootUser: "admin"        # Замените на желаемое имя пользователя
+  rootPassword: "admin" # Замените на желаемый пароль (минимум 8 символов, рекомендуется сложный пароль)
 
 resources:
   requests:

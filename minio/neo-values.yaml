@@ -20,8 +20,8 @@ service:
     api: 9000
     console: 9001
   nodePorts:
-    api: "30090"
-    console: "30091"
+    api: "30095"
+    console: "30096"
 auth:
   rootUser: "admin"        # Замените на желаемое имя пользователя
   rootPassword: "admin" # Замените на желаемый пароль (минимум 8 символов, рекомендуется сложный пароль)

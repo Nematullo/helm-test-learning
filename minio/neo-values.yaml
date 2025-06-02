@@ -3,18 +3,25 @@
 #  tag: 16.0.10 # Или версия, которую вы загрузили
   replicaCount: 1
 
+#service:
+#  type: NodePort
+#  ports:
+#    - name: api
+#      port: 9000
+#      targetPort: 9000 # MinIO API прослушивает порт 9000
+#      nodePort: 30090
+#    - name: console
+#      port: 9001
+#      targetPort: 9001 # Консоль MinIO прослушивает порт 9001
+#      nodePort: 30091
 service:
   type: NodePort
   ports:
-    - name: api
-      port: 9000
-      targetPort: 9000 # MinIO API прослушивает порт 9000
-      nodePort: 30090
-    - name: console
-      port: 9001
-      targetPort: 9001 # Консоль MinIO прослушивает порт 9001
-      nodePort: 30091
-
+    api: 9000
+    console: 9001
+  nodePorts:
+    api: "30090"
+    console: "30091"
 auth:
   rootUser: "admin"        # Замените на желаемое имя пользователя
   rootPassword: "admin" # Замените на желаемый пароль (минимум 8 символов, рекомендуется сложный пароль)

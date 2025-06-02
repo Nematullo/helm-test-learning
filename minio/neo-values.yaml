@@ -2,11 +2,21 @@
 #  repository: docker.io/bitnami/minio
 #  tag: 16.0.10 # Или версия, которую вы загрузили
   replicaCount: 1
-  
+
 service:
-  type: NodePort # Используем NodePort
-  nodePort: 30090 # Выберите доступный NodePort (30000-32767)
-  port: 9000 # Порт внутри кластера (не меняйте)
+  type: ClusterIP
+  ports:
+    api: 9000
+    console: 9001
+
+  nodePorts:
+    api: "30090"
+    console: "30091"
+
+#service:
+#  type: NodePort # Используем NodePort
+#  nodePort: 30090 # Выберите доступный NodePort (30000-32767)
+#  port: 9000 # Порт внутри кластера (не меняйте)
 
 resources:
   requests:

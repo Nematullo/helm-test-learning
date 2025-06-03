@@ -21,6 +21,7 @@ spec:
       containers:
       - name: current-time
         image: neorld/current-time:latest
+        imagePullPolicy: Always # <--- Добавьте или убедитесь, что это Always
         command: [ "python" ]
         args: [ "current_time.py" ]
         volumeMounts:

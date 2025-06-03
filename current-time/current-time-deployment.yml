@@ -61,7 +61,10 @@ spec:
 
       volumes:                      # вот здесь, ровно на одном уровне с containers!
       - name: varlog
-        emptyDir: {}
+        #emptyDir: {}
+        hostPath:
+          path: /var/log/current-time
+          type: Directory
 
       - name: vector-config
         configMap:

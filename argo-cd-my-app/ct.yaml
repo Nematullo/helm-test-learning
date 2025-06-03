@@ -14,7 +14,7 @@ spec:
 
   destination:
     server: https://kubernetes.default.svc  # URL API-сервера вашего кластера (для кластера, где работает Argo CD)
-    namespace: default                      # Неймспейс, куда Argo CD будет разворачивать ресурсы
+    namespace: argocd                      # Неймспейс, куда Argo CD будет разворачивать ресурсы
 
   syncPolicy:
     automated:               # Включаем автоматическую синхронизацию

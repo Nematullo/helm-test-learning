@@ -6,15 +6,17 @@ metadata:
 spec:
   project: mon
 
-  source:
-    repoURL: 'https://github.com/nematullo/helm-test-learning.git'
-    targetRevision: HEAD
-    path: vector
-    
-        # ЭТИ ДВЕ СТРОКИ НУЖНЫ, КОГДА ВЫ ИСПОЛЬЗУЕТЕ ВНЕШНИЙ HELM-ЧАРТ:
-    chart: vector         # Имя чарта, который Argo CD должен скачать
-    repoURL: https://helm.vector.dev # ИЛИ OCI: oci://registry-1.docker.io/bitnamicharts/vector # Репозиторий Helm-чарта Vector
-    targetRevision: 0.20.0 # Версия Helm-чарта Vector (важно указать конкретную версию)
+  sources: # <--- ЭТО ДОЛЖНО БЫТЬ 'sources:' (МНОЖЕСТВЕННОЕ ЧИСЛО)!
+
+  # --- ИСТОЧНИК 1: Сам Helm-чарт Vector из его репозитория ---
+  - repoURL: https://helm.vector.dev # URL официального Helm-репозитория Vector
+    chart: vector                 # Имя чарта в этом репозитории
+    targetRevision: 0.20.0        # <--- ВЕРСИЯ ЧАРТА Vector, которую вы хотите использовать
+
+  # --- ИСТОЧНИК 2: Ваш Git-репозиторий с кастомными values.yaml ---
+  - repoURL: 'https://github.com/nematullo/helm-test-learning.git' # URL ВАШЕГО GIT-РЕПОЗИТОРИЯ
+    targetRevision: HEAD          # Ветка (например, 'main' или 'master')
+    path: vector       # <--- ПУТЬ ВНУТРИ ВАШЕГО GIT-РЕПОЗИТОРИЯ, где лежит vector-values.yaml
 
     
     helm:

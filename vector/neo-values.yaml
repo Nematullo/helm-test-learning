@@ -53,3 +53,35 @@ agent:
 # Если Loki установлен в том же неймспейсе, достаточно `http://loki:3100`
 # Если Loki находится в другом неймспейсе, например, `loki-stack`, то endpoint будет `http://loki.loki-stack.svc.cluster.local:3100`
 # Я использовал `http://loki:3100` как наиболее распространенный вариант.
+  # ЭТИ СЕКЦИИ Я ДОБАВИЛ В КОНЕЦ ВАШЕГО БЛОКА 'agent:'
+  volumes: # <--- ЭТОТ БЛОК Я ДОБАВИЛ
+  - name: current-time-app-logs-host
+    hostPath:
+      path: /var/log/k8s-apps/current-time-app-logs
+      type: DirectoryOrCreate
+  - name: varlogpods # Для стандартных логов контейнеров Kubernetes
+    hostPath:
+      path: /var/log/pods
+      type: Directory
+  - name: varlogcontainers # Для стандартных логов контейнеров Docker/containerd
+    hostPath:
+      path: /var/log/containers
+      type: Directory
+  - name: varlibdockercontainers # Для еще более низкоуровневых логов Docker
+    hostPath:
+      path: /var/lib/docker/containers
+      type: Directory
+
+  volumeMounts: # <--- ЭТОТ БЛОК Я ДОБАВИЛ
+  - name: current-time-app-logs-host
+    mountPath: /var/log/k8s-apps/current-time-app-logs
+    readOnly: true
+  - name: varlogpods
+    mountPath: /var/log/pods
+    readOnly: true
+  - name: varlogcontainers
+    mountPath: /var/log/containers
+    readOnly: true
+  - name: varlibdockercontainers
+    mountPath: /var/lib/docker/containers
+    readOnly: true

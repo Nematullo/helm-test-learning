@@ -1,6 +1,4 @@
-# Loki-Stack Helm Chart
-
-This `loki-stack` Helm chart is a community maintained chart.
+# Loki Helm Chart
 
 ## Prerequisites
 
@@ -15,58 +13,93 @@ helm repo update
 
 _See [helm repo](https://helm.sh/docs/helm/helm_repo/) for command documentation._
 
-## Deploy Loki and Promtail to your cluster
 
-### Deploy with default config
-
-```bash
-helm upgrade --install loki grafana/loki-stack
-```
-
-### Deploy in a custom namespace
+## Deploy Loki only
 
 ```bash
-helm upgrade --install loki --namespace=loki-stack grafana/loki-stack
+helm upgrade --install loki grafana/loki
 ```
 
-### Deploy with custom config
+## Upgrading
 
-```bash
-helm upgrade --install loki grafana/loki-stack --set "key1=val1,key2=val2,..."
+### Upgrading an existing Release to a new major version
+
+Major version upgrades listed here indicate that there is an incompatible breaking change needing manual actions.
+
+### From 2.11.x to 2.12.0
+
+In version 2.12.0, we enabled memberlist by default and added additional kubernetes service used for members communication.
+
+If you already use `memberlist`, just review the config (`.Values.config.memberlist`) to make sure new `memberlist` config matches with your current configuration.
+
+If you use another implementation(`etcd`, `consul`, `inmemory`) for the ring, you can disable `memberlist` with setting `.Values.config.memberlist` to `null`. 
+It prevents from enabling `memberlist` and creating additional kubernetes service.
+
+### From 2.12.x to 2.13.0
+
+In version 2.13.0, we added custom labels to the `volumeClaimTemplates` in the `loki` Statefulset.
+
+If you want to add labels to PersistentVolumeClaim (PVC) via `persistence.labels` values, you must delete the old `loki` Statefulset in the existing release prior upgrading. Without it, the upgrade fails with the following error:
+
+> Error: UPGRADE FAILED: cannot patch "loki" with kind StatefulSet: StatefulSet.apps "loki" is invalid: spec: Forbidden: updates to statefulset spec for fields other than 'replicas', 'template', and 'updateStrategy' are forbidden
+
+## Run Loki behind https ingress
+
+If Loki and Promtail are deployed on different clusters you can add an Ingress in front of Loki.
+By adding a certificate you create an https endpoint. For extra security enable basic authentication on the Ingress.
+
+In Promtail set the following values to communicate with https and basic auth
+
+```yaml
+loki:
+  serviceScheme: https
+  user: user
+  password: pass
 ```
 
-## Deploy Loki and Fluent Bit to your cluster
+Sample helm template for ingress:
 
-```bash
-helm upgrade --install loki grafana/loki-stack \
-    --set fluent-bit.enabled=true,promtail.enabled=false
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: loki
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingress.class }}
+    ingress.kubernetes.io/auth-type: basic
+    ingress.kubernetes.io/auth-secret: {{ .Values.ingress.basic.secret }}
+spec:
+  rules:
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: loki
+            port:
+              number: 3100
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - {{ .Values.ingress.host }}
+    secretName: {{ .Values.ingress.cert }}
 ```
 
-## Deploy Grafana to your cluster
+## Use Loki Alerting
 
-The chart loki-stack contains a pre-configured Grafana, simply use `--set grafana.enabled=true`
+You can add your own alerting rules with `alerting_groups` in `values.yaml`. This will create a ConfigMap with your rules and additional volumes and mounts for Loki.
 
-To get the admin password for the Grafana pod, run the following command:
+This does **not** enable the Loki `ruler` component which does the evaluation of your rules. The `values.yaml` file does contain a simple example. For more details take a look at the official [alerting docs](https://grafana.com/docs/loki/latest/rules/).
 
-```bash
-kubectl get secret --namespace <YOUR-NAMESPACE> loki-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+## Enable retention policy (log deletion)
+
+Set Helm value `config.compactor.retention_enabled` to enable retention using the default policy, which deletes logs after 31 days.
+
+```yaml
+config:
+  compactor:
+    retention_enabled: true
 ```
 
-To access the Grafana UI, run the following command:
-
-```bash
-kubectl port-forward --namespace <YOUR-NAMESPACE> service/loki-grafana 3000:80
-```
-
-Navigate to <http://localhost:3000> and login with `admin` and the password output above.
-Then follow the [instructions for adding the loki datasource](https://grafana.com/docs/grafana/latest/datasources/loki/), using the URL `http://loki:3100/`.
-
-## Upgrade
-### Version >= 2.8.0
-Provide support configurable datasource urls [#1374](https://github.com/grafana/helm-charts/pull/1374)
-
-### Version >= 2.7.0
-Update promtail dependency to ^6.2.3 [#1692](https://github.com/grafana/helm-charts/pull/1692)
-
-### Version >=2.6.0
-Bumped grafana 8.1.6->8.3.4 [#1013](https://github.com/grafana/helm-charts/pull/1013)
+See [the documentation](https://grafana.com/docs/loki/latest/operations/storage/retention/) for additional options.

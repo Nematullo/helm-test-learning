@@ -1,0 +1,164 @@
+test_pod:
+  enabled: true
+  image: bats/bats:1.8.2
+  pullPolicy: IfNotPresent
+
+loki:
+  enabled: true
+  isDefault: true
+  url: http://{{(include "loki.serviceName" .)}}:{{ .Values.loki.service.port }}
+  readinessProbe:
+    httpGet:
+      path: /ready
+      port: http-metrics
+    initialDelaySeconds: 45
+  livenessProbe:
+    httpGet:
+      path: /ready
+      port: http-metrics
+    initialDelaySeconds: 45
+  datasource:
+    jsonData: "{}"
+    uid: ""
+
+  config: # <-- Здесь начинается полная конфигурация Loki
+    auth_enabled: false
+    chunk_store_config:
+      max_look_back_period: 0s # Или 24h/7d для продакшена
+    compacto: # <--- Добавлена секция compactor
+      shared_store: filesystem
+      working_directory: /data/loki/boltdb-shipper-compactor
+    ingester: # <--- Добавлена секция ingester
+      chunk_block_size: 262144
+      chunk_idle_period: 3m
+      chunk_retain_period: 1m
+      lifecycle:
+        ring:
+          replication_factor: 1
+      max_transfer_retries: 0
+      wal:
+        dir: /data/loki/wal
+    limits_config: # <--- Добавлена секция limits_config
+      enforce_metric_name: false
+      max_entries_limit_per_query: 5000
+      reject_old_samples: true
+      reject_old_samples_max_age: 168h
+    memberlist: # <--- Добавлена секция memberlist
+      join_members:
+      - 'loki-mon-memberlist'
+    schema_config: # <--- Добавлена секция schema_config
+      configs:
+      - from: "2020-10-24"
+        index:
+          period: 24h
+          prefix: index_
+        object_store: s3 # <--- ИЗМЕНЕНО: теперь указывает на S3, чтобы использовать MinIO для индексов
+        schema: v11
+        store: boltdb-shipper
+    server: # <--- Добавлена секция server
+      grpc_listen_port: 9095
+      http_listen_port: 3100
+    storage_config: # <--- Ваша секция storage_config, теперь она находится в полном контексте
+      aws:
+        s3:
+          bucketnames: loki
+          endpoint: "minio-mon.argocd.svc.cluster.local:9000"
+          region: "us-east-1"
+          access_key_id: "loki-user"
+          secret_access_key: "loki-user"
+          s3forcepathstyle: true
+          insecure: true
+      boltdb_shipper: # <--- Эти секции были в декодированном Secret и должны быть здесь
+        active_index_directory: /data/loki/boltdb-shipper-active
+        cache_location: /data/loki/boltdb-shipper-cache
+        cache_ttl: 24h
+        shared_store: filesystem # <--- Если S3 используется для всего, это может измениться
+      filesystem: # <--- Эти секции были в декодированном Secret и должны быть здесь
+        directory: /data/loki/chunks
+    table_manager: # <--- Добавлена секция table_manager
+      retention_deletes_enabled: false
+      retention_period: 0s
+
+promtail:
+  enabled: true
+  config:
+    logLevel: info
+    serverPort: 3101
+    clients:
+      - url: http://loki-mon.argocd.svc.cluster.local:3100/loki/api/v1/push
+
+fluent-bit:
+  enabled: false
+
+grafana:
+  enabled: false
+  sidecar:
+    datasources:
+      label: ""
+      labelValue: ""
+      enabled: true
+      maxLines: 1000
+  image:
+    tag: 10.3.3
+
+prometheus:
+  enabled: false
+  isDefault: false
+  url: http://{{ include "prometheus.fullname" .}}:{{ .Values.prometheus.server.service.servicePort }}{{ .Values.prometheus.server.prefixURL }}
+  datasource:
+    jsonData: "{}"
+
+filebeat:
+  enabled: false
+  filebeatConfig:
+    filebeat.yml: |
+      # logging.level: debug
+      filebeat.inputs:
+      - type: container
+        paths:
+          - /var/log/containers/*.log
+        processors:
+        - add_kubernetes_metadata:
+            host: ${NODE_NAME}
+            matchers:
+            - logs_path:
+                logs_path: "/var/log/containers/"
+      output.logstash:
+        hosts: ["logstash-loki:5044"]
+
+logstash:
+  enabled: false
+  image: grafana/logstash-output-loki
+  imageTag: 1.0.1
+  filters:
+    main: |-
+      filter {
+        if [kubernetes] {
+          mutate {
+            add_field => {
+              "container_name" => "%{[kubernetes][container][name]}"
+              "namespace" => "%{[kubernetes][namespace]}"
+              "pod" => "%{[kubernetes][pod][name]}"
+            }
+            replace => { "host" => "%{[kubernetes][node][name]}"}
+          }
+        }
+        mutate {
+          remove_field => ["tags"]
+        }
+      }
+  outputs:
+    main: |-
+      output {
+        loki {
+          url => "http://loki-mon.argocd.svc.cluster.local:3100/loki/api/v1/push"
+          #username => "test"
+          #password => "test"
+        }
+        # stdout { codec => rubydebug }
+      }
+
+proxy:
+  http_proxy: ""
+  https_proxy: ""
+  no_proxy: ""

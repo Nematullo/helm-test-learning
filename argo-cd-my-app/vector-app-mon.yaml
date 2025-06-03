@@ -6,23 +6,22 @@ metadata:
 spec:
   project: mon
 
-  sources: # <--- ЭТО ДОЛЖНО БЫТЬ 'sources:' (МНОЖЕСТВЕННОЕ ЧИСЛО)!
+  sources: 
 
-  # --- ИСТОЧНИК 1: Сам Helm-чарт Vector из его репозитория ---
-  - repoURL: https://helm.vector.dev # URL официального Helm-репозитория Vector
+--
+  - repoURL: https://helm.vector.dev 
     chart: vector                 # Имя чарта в этом репозитории
     targetRevision: 0.20.0        # <--- ВЕРСИЯ ЧАРТА Vector, которую вы хотите использовать
 
-  # --- ИСТОЧНИК 2: Ваш Git-репозиторий с кастомными values.yaml ---
+ --
   - repoURL: 'https://github.com/nematullo/helm-test-learning.git' # URL ВАШЕГО GIT-РЕПОЗИТОРИЯ
-    targetRevision: HEAD          # Ветка (например, 'main' или 'master')
-    path: vector       # <--- ПУТЬ ВНУТРИ ВАШЕГО GIT-РЕПОЗИТОРИЯ, где лежит vector-values.yaml
+    targetRevision: HEAD         
+    path: vector      
 
     
-  helm: # <--- ЭТОТ БЛОК 'helm:' ДОЛЖЕН БЫТЬ ЗДЕСЬ! НА УРОВНЕ 'spec:' (не в 'sources:'!)
+  helm: 
     valueFiles:
-      # Обращаемся ко второму источнику (индекс 1)
-      - $argocd_app_source_1/neo-values.yaml # <--- Убедитесь, что имя файла ТОЧНО "neo-values.yaml"
+      - $argocd_app_source_1/neo-values.yaml 
 
   destination:
     server: 'https://kubernetes.default.svc'

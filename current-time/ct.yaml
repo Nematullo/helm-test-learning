@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://github.com/your-username/kubernetes-configs.git # URL вашего Git-репозитория
     targetRevision: HEAD     # Ветка или тег для синхронизации (например, 'main', 'HEAD', 'v1.0')
-    path: current-time-app   # Путь внутри репозитория, где находится ваш Deployment
+    path: current-time   # Путь внутри репозитория, где находится ваш Deployment
 
   destination:
     server: https://kubernetes.default.svc  # URL API-сервера вашего кластера (для кластера, где работает Argo CD)

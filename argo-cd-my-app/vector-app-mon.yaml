@@ -19,9 +19,10 @@ spec:
     path: vector       # <--- ПУТЬ ВНУТРИ ВАШЕГО GIT-РЕПОЗИТОРИЯ, где лежит vector-values.yaml
 
     
-    helm:
-      valueFiles:
-        - neo-values.yaml
+  helm: # <--- ЭТОТ БЛОК 'helm:' ДОЛЖЕН БЫТЬ ЗДЕСЬ! НА УРОВНЕ 'spec:' (не в 'sources:'!)
+    valueFiles:
+      # Обращаемся ко второму источнику (индекс 1)
+      - $argocd_app_source_1/neo-values.yaml # <--- Убедитесь, что имя файла ТОЧНО "neo-values.yaml"
 
   destination:
     server: 'https://kubernetes.default.svc'

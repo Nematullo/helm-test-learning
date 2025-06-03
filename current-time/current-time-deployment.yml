@@ -27,9 +27,10 @@ spec:
         volumeMounts:
         - name: varlog
           mountPath: /var/log/current-time
+          mountPropagation: HostToContainer
         command: [ "python" ]
         args: [ "current_time.py" ]
-
+        
 #      - name: current-time               # Имя контейнера внутри пода (может быть любое удобное)
 #        image: neorld/current-time:latest  # Образ Docker, который будет использоваться для запуска контейнера
 #        ports:

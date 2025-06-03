@@ -21,16 +21,13 @@ spec:
       containers:
       - name: current-time
         image: neorld/current-time:latest
-#        command: ["/bin/sh", "-c"]
-#        args:
-#          - mkdir -p /var/log/current-time && sleep 3600
+        command: [ "python" ]
+        args: [ "current_time.py" ]
         volumeMounts:
         - name: varlog
           mountPath: /var/log/current-time
           mountPropagation: HostToContainer
-        command: [ "python" ]
-        args: [ "current_time.py" ]
-        
+
 #      - name: current-time               # Имя контейнера внутри пода (может быть любое удобное)
 #        image: neorld/current-time:latest  # Образ Docker, который будет использоваться для запуска контейнера
 #        ports:

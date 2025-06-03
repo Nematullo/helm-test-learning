@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default           # Проект Argo CD, к которому относится это приложение (можно создать свой)
   source:
-    repoURL: https://github.com/your-username/kubernetes-configs.git # URL вашего Git-репозитория
+    repoURL: https://github.com/nematullo/helm-test-learning.git # URL вашего Git-репозитория
     targetRevision: HEAD     # Ветка или тег для синхронизации (например, 'main', 'HEAD', 'v1.0')
     path: current-time   # Путь внутри репозитория, где находится ваш Deployment
 

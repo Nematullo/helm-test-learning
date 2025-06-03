@@ -10,6 +10,13 @@ spec:
     repoURL: 'https://github.com/nematullo/helm-test-learning.git'
     targetRevision: HEAD
     path: vector
+    
+        # ЭТИ ДВЕ СТРОКИ НУЖНЫ, КОГДА ВЫ ИСПОЛЬЗУЕТЕ ВНЕШНИЙ HELM-ЧАРТ:
+    chart: vector         # Имя чарта, который Argo CD должен скачать
+    repoURL: https://helm.vector.dev # ИЛИ OCI: oci://registry-1.docker.io/bitnamicharts/vector # Репозиторий Helm-чарта Vector
+    targetRevision: 0.20.0 # Версия Helm-чарта Vector (важно указать конкретную версию)
+
+    
     helm:
       valueFiles:
         - vector-values.yaml

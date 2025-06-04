@@ -31,6 +31,39 @@ data:
     # ВНИМАНИЕ: ЭТА СТРОКА ДОЛЖНА БЫТЬ С ТЕМ ЖЕ ОТСТУПОМ, ЧТО И exclude_paths_glob_patterns !
     extra_field_selector = "metadata.name=current-time-app-0" 
 
+
+    ---
+    ### НАСТРАИВАЕМЫЙ ФИЛЬТР МЕТАДАННЫХ KUBERNETES ###
+    #
+    # Эта трансформация `remove_fields` позволяет вам ВЫБИРАТЕЛЬНО удалять метаданные из логов.
+    # Чтобы УДАЛИТЬ какое-либо поле, уберите символ '#' перед ним.
+    # Чтобы ОСТАВИТЬ поле, поставьте символ '#' перед ним (закомментируйте строку).
+    #
+    [transforms.customize_kube_metadata]
+    type = "remove_fields"
+    inputs = ["kubernetes_current_time_app_logs"] # Берем логи от источника Kubernetes
+    fields = [
+      # Основные метаданные (обычно оставляют):
+      # "kubernetes.container_name",
+      # "kubernetes.container_image",
+      # "kubernetes.pod_name",
+      # "kubernetes.pod_namespace",
+      # "kubernetes.pod_node_name",
+      # "kubernetes.pod_owner",
+      # "kubernetes.pod_labels",
+      # "kubernetes.namespace_labels", # Часто полезно, но может быть объемным
+      # "kubernetes.node_labels",      # Может быть очень объемным
+
+      # Метаданные, которые можно удалять для уменьшения размера:
+      "file",                      # Путь к файлу лога (часто не нужен для аналитики)
+      "kubernetes.container_id",   # Длинный идентификатор контейнера
+      "kubernetes.container_image_id", # Длинный идентификатор образа
+      "kubernetes.pod_ip",         # IP-адрес пода
+      "kubernetes.pod_ips",        # Список IP-адресов пода
+      "kubernetes.pod_uid"         # Уникальный ID пода (UUID)
+    ]
+    ---
+
     # Sink: отправка логов из файла в Loki (если Loki настроен)
     [sinks.loki_from_file]
     type = "loki"
@@ -50,5 +83,6 @@ data:
     # Sink: Вывод логов stdout/stderr приложения в stdout Vector'а БЕЗ ДОБАВЛЕНИЯ МЕТАДАННЫХ
     [sinks.console_kubernetes_current_time_app_logs]
     type = "console"
-    inputs = ["kubernetes_current_time_app_logs"]
+    #inputs = ["kubernetes_current_time_app_logs"]
+    inputs = ["customize_kube_metadata"] # <--- Теперь вход от НОВОЙ трансформации!
     encoding.codec = "json" # Вывод в JSON для удобства чтения

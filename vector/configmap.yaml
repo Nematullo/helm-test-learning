@@ -45,14 +45,14 @@ data:
     fields = [
       # Основные метаданные (обычно оставляют):
       # "kubernetes.container_name",
-      # "kubernetes.container_image",
+       "kubernetes.container_image",
       # "kubernetes.pod_name",
       # "kubernetes.pod_namespace",
-      # "kubernetes.pod_node_name",
-      # "kubernetes.pod_owner",
-      # "kubernetes.pod_labels",
-      # "kubernetes.namespace_labels", # Часто полезно, но может быть объемным
-      # "kubernetes.node_labels",      # Может быть очень объемным
+       "kubernetes.pod_node_name",
+       "kubernetes.pod_owner",
+       "kubernetes.pod_labels",
+       "kubernetes.namespace_labels", # Часто полезно, но может быть объемным
+       "kubernetes.node_labels",      # Может быть очень объемным
 
       # Метаданные, которые можно удалять для уменьшения размера:
       "file",                      # Путь к файлу лога (часто не нужен для аналитики)

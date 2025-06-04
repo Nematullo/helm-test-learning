@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: current-time-app  # Имя StatefulSet
+  namespace: argocd
+spec:
+  serviceName: "current-time-headless-service" # Имя Headless Service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: current-time-app
+  template:
+    metadata:
+      labels:
+        app: current-time-app
+    spec:
+      containers:
+      - name: current-time
+        image: neorld/current-time:latest
+        imagePullPolicy: IfNotPresent # Или Always
+        command: [ "python" ]
+        args: [ "current_time.py" ]
+        ports:
+        - containerPort: 1001
+          name: http-web
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log/current-time
+      volumes:
+      - name: varlog
+        emptyDir: {} # <-- Здесь emptyDir
+      # Эти HostPath тома нужны ТОЛЬКО в Vector DaemonSet, НЕ ЗДЕСЬ.
+      # Если они есть в вашем текущем Deployment и вы хотите их убрать из приложения, то удалите их здесь.
+      # - name: varlogpods
+      #   hostPath:
+      #     path: /var/log/pods
+      #     type: Directory
+      # - name: varlogcontainers
+      #   hostPath:
+      #     path: /var/log/containers
+      #     type: Directory
+      # - name: varlibdockercontainers
+      #   hostPath:
+      #     path: /var/lib/docker/containers
+      #     type: Directory
+      # - name: runcontainerd
+      #   hostPath:
+      #     path: /run/containerd
+      #     type: DirectoryOrCreate
+      # - name: rootfs # ОЧЕНЬ СИЛЬНО РЕКОМЕНДУЕТСЯ УДАЛИТЬ!
+      #   hostPath:
+      #     path: /
+      #     type: Directory

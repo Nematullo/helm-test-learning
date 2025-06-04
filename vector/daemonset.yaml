@@ -46,6 +46,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace # Автоматически получает неймспейс пода Vector
+            ### ДОБАВЛЕНО ###
+            - name: VECTOR_LOG_LEVEL
+              value: "debug"
+            ### КОНЕЦ ДОБАВЛЕННЫХ СТРОК ###
           resources:
             limits:
               cpu: 100m

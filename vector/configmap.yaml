@@ -34,34 +34,38 @@ data:
 
     ### НАСТРАИВАЕМЫЙ ФИЛЬТР МЕТАДАННЫХ KUBERNETES ###
     #
-    # Эта трансформация `remove_fields` позволяет вам ВЫБИРАТЕЛЬНО удалять метаданные из логов.
-    # Чтобы УДАЛИТЬ какое-либо поле, уберите символ '#' перед ним.
-    # Чтобы ОСТАВИТЬ поле, поставьте символ '#' перед ним (закомментируйте строку).
+    # Эта трансформация `remap` позволяет вам ВЫБИРАТЕЛЬНО удалять метаданные из логов
+    # с помощью Vector Remap Language (VRL).
+    # Для удаления поля используйте команду `del(.path.to.field)`.
     #
     [transforms.customize_kube_metadata]
-    type = "remove_fields"
+    type = "remap" # <--- ИЗМЕНЕНО НА "remap"
     inputs = ["kubernetes_current_time_app_logs"] # Берем логи от источника Kubernetes
-    fields = [
-      # Основные метаданные (обычно оставляют):
-      # "kubernetes.container_name",
-       "kubernetes.container_image",
-      # "kubernetes.pod_name",
-      # "kubernetes.pod_namespace",
-       "kubernetes.pod_node_name",
-       "kubernetes.pod_owner",
-       "kubernetes.pod_labels",
-       "kubernetes.namespace_labels", # Часто полезно, но может быть объемным
-       "kubernetes.node_labels",      # Может быть очень объемным
+    source = '''
+      # Удаляемые поля (раскомментируйте строку, чтобы удалить)
+      del(.kubernetes.container_image) # Удаляем имя образа контейнера
+      del(.kubernetes.pod_node_name)   # Удаляем имя узла пода
+      del(.kubernetes.pod_owner)       # Удаляем владельца пода
+      del(.kubernetes.pod_labels)      # Удаляем метки пода
+      del(.kubernetes.namespace_labels) # Удаляем метки неймспейса
+      del(.kubernetes.node_labels)     # Удаляем метки узла
 
-      # Метаданные, которые можно удалять для уменьшения размера:
-      "file",                      # Путь к файлу лога (часто не нужен для аналитики)
-      "kubernetes.container_id",   # Длинный идентификатор контейнера
-      "kubernetes.container_image_id", # Длинный идентификатор образа
-      "kubernetes.pod_ip",         # IP-адрес пода
-      "kubernetes.pod_ips",        # Список IP-адресов пода
-      "kubernetes.pod_uid"         # Уникальный ID пода (UUID)
-    ]
+      # Дополнительные метаданные, которые вы хотели удалить ранее
+      del(.file)                      # Удаляем путь к файлу лога
+      del(.kubernetes.container_id)   # Удаляем длинный идентификатор контейнера
+      del(.kubernetes.container_image_id) # Удаляем длинный идентификатор образа
+      del(.kubernetes.pod_ip)         # Удаляем IP-адрес пода
+      del(.kubernetes.pod_ips)        # Удаляем список IP-адресов пода
+      del(.kubernetes.pod_uid)        # Удаляем уникальный ID пода (UUID)
 
+      # Поля, которые вы хотели ОСТАВИТЬ, здесь не нужно удалять
+      # (т.е., они не перечислены с 'del()')
+      # kubernetes.container_name
+      # kubernetes.pod_name
+      # kubernetes.pod_namespace
+    ''' # <--- СКРИПТ VRL ЗАВЕРШАЕТСЯ ЭТИМИ ТРЕМЯ КАВЫЧКАМИ
+
+    
     # Sink: отправка логов из файла в Loki (если Loki настроен)
     [sinks.loki_from_file]
     type = "loki"

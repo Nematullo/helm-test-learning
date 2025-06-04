@@ -72,7 +72,7 @@ data:
     endpoint = "http://loki.argocd.svc.cluster.local:3100/loki/api/v1/push"
     encoding.codec = "json"
 
-    healthcheck.enabled = true
+    healthcheck.enabled = false
     healthcheck.uri = "http://loki.argocd.svc.cluster.local:3100/ready"
 
     [sinks.loki_from_ks8_current-time.labels]

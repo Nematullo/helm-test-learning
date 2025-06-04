@@ -77,6 +77,7 @@ data:
     [sinks.loki_from_ks8_current-time.labels] # <--- ИЗМЕНЕНО
     job = "current-time"
     application = "current-time-app" # Хорошая дополнительная метка для Loki
+    instance = "{{ VECTOR_SELF_POD_NAME }}" 
 
     #[sinks.loki_from_file.labels]
     #job = "current-time"

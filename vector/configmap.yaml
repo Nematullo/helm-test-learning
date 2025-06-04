@@ -65,18 +65,10 @@ data:
       # kubernetes.pod_namespace
     ''' # <--- СКРИПТ VRL ЗАВЕРШАЕТСЯ ЭТИМИ ТРЕМЯ КАВЫЧКАМИ
 
-        # НОВАЯ ТРАНСФОРМАЦИЯ: Добавляем имя пода Vector как поле к событию
-    [transforms.add_vector_instance_field]
-    type = "remap"
-    inputs = ["customize_kube_metadata"] # Берем уже отфильтрованные метаданные
-    source = '''
-      .instance = env!("VECTOR_SELF_POD_NAME") # Добавляем новое поле ".instance" со значением из ENV-переменной
-    '''
-
     # Sink: отправка логов в Loki
     [sinks.loki_from_ks8_current-time]
     type = "loki"
-    inputs = ["add_vector_instance_field"] # <--- Вход теперь от НОВОЙ трансформации!
+    inputs = ["customize_kube_metadata"] # <--- Вход теперь от НОВОЙ трансформации!
     endpoint = "http://loki.argocd.svc.cluster.local:3100/loki/api/v1/push"
     encoding.codec = "json"
 
@@ -86,7 +78,7 @@ data:
     [sinks.loki_from_ks8_current-time.labels]
     job = "current-time"
     application = "current-time-app"
-    instance = "{{ instance }}" # <--- Теперь ссылаемся на НОВОЕ ПОЛЕ в событии!
+    instance = "{{ kubernetes.pod_name }}" # <-- ИЗМЕНЕНО: используем имя пода приложения для уникальности
 
     # Sink: вывод логов из файла в stdout Vector'а
     [sinks.console_from_file]

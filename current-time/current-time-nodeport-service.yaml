@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: current-time-nodeport-service # Отдельное имя для NodePort Service, чтобы избежать путаницы
+  namespace: argocd
+spec:
+  type: NodePort             # Тип сервиса — NodePort для внешнего доступа
+  selector:
+    app: current-time-app    # <--- Важно: теперь этот селектор должен указывать на метку подов StatefulSet!
+  ports:
+    - protocol: TCP
+      port: 1001             # Порт, на котором сервис слушает внутри кластера
+      targetPort: 1001       # Порт на контейнерах, на который перенаправляется трафик
+      nodePort: 31001        # Внешний порт на нодах, через который можно достучаться извне

@@ -67,14 +67,19 @@ data:
 
     
     # Sink: отправка логов из файла в Loki (если Loki настроен)
-    [sinks.loki_from_file]
+    [sinks.loki_from_ks8_current-time]
     type = "loki"
-    inputs = ["current_time_logs_file"]
-    endpoint = "http://loki-mon.argocd.svc.cluster.local:3100/loki/api/v1/push"
+    inputs = ["customize_kube_metadata"] # <--- Теперь вход от НОВОЙ трансформации!
+    #inputs = ["current_time_logs_file"]
+    endpoint = "http://loki.argocd.svc.cluster.local:3100/loki/api/v1/push"
     encoding.codec = "json"
 
-    [sinks.loki_from_file.labels]
+    [sinks.loki_from_ks8_current-time.labels] # <--- ИЗМЕНЕНО
     job = "current-time"
+    application = "current-time-app" # Хорошая дополнительная метка для Loki
+
+    #[sinks.loki_from_file.labels]
+    #job = "current-time"
 
     # Sink: вывод логов из файла в stdout Vector'а
     [sinks.console_from_file]

@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: loki-mon
+  name: loki
   namespace: argocd
 spec:
   project: mon
@@ -12,7 +12,7 @@ spec:
     path: loki
     helm:
       valueFiles:
-        - values.yaml
+        - neo-values.yaml
 
   destination:
     server: 'https://kubernetes.default.svc'

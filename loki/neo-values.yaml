@@ -1,0 +1,181 @@
+# loki-values.yaml
+#
+# Это стандартный values.yaml для Helm-чарта Loki
+# с небольшими изменениями для NodePort.
+#
+image:
+  repository: grafana/loki
+  tag: 2.9.0 # Рекомендуется использовать более свежую стабильную версию
+  pullPolicy: IfNotPresent
+
+# pullSecrets:
+#   - myRegistryKeySecretName
+
+ingress:
+  enabled: false
+  # ingressClassName: nginx
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths: []
+  tls: []
+
+affinity: {}
+
+annotations: {}
+
+tracing:
+  jaegerAgentHost:
+
+config:
+  auth_enabled: false # Отключаем аутентификацию для простоты
+
+  memberlist:
+    join_members:
+      - '{{ include "loki.fullname" . }}-memberlist'
+
+  ingester:
+    chunk_idle_period: 3m
+    chunk_block_size: 262144
+    chunk_retain_period: 1m
+    max_transfer_retries: 0
+    wal:
+      dir: /data/loki/wal
+    lifecycler:
+      ring:
+        replication_factor: 1
+
+  limits_config:
+    enforce_metric_name: false
+    reject_old_samples: true
+    reject_old_samples_max_age: 168h
+    max_entries_limit_per_query: 5000
+  schema_config:
+    configs:
+    - from: 2020-10-24
+      store: boltdb-shipper
+      object_store: filesystem
+      schema: v11
+      index:
+        prefix: index_
+        period: 24h
+  server:
+    http_listen_port: 3100 # Loki слушает на этом порту
+    grpc_listen_port: 9095
+  storage_config:
+    boltdb_shipper:
+      active_index_directory: /data/loki/boltdb-shipper-active
+      cache_location: /data/loki/boltdb-shipper-cache
+      cache_ttl: 24h
+      shared_store: filesystem
+    filesystem:
+      directory: /data/loki/chunks
+  chunk_store_config:
+    max_look_back_period: 0s
+  table_manager:
+    retention_deletes_enabled: false
+    retention_period: 0s
+  compactor:
+    working_directory: /data/loki/boltdb-shipper-compactor
+    shared_store: filesystem
+
+extraArgs: {}
+extraEnvFrom: []
+
+livenessProbe:
+  httpGet:
+    path: /ready
+    port: http-metrics
+  initialDelaySeconds: 45
+
+networkPolicy:
+  enabled: false
+
+client: {}
+
+nodeSelector: {}
+
+persistence:
+  enabled: false # Для тестирования можно отключить, иначе нужен PV
+  accessModes:
+  - ReadWriteOnce
+  size: 10Gi
+  labels: {}
+  annotations: {}
+
+podLabels: {}
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "http-metrics"
+
+podManagementPolicy: OrderedReady
+
+rbac:
+  create: true
+  pspEnabled: true
+
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: http-metrics
+  initialDelaySeconds: 45
+
+replicas: 1
+
+resources: {}
+# limits:
+#   cpu: 200m
+#   memory: 256Mi
+# requests:
+#   cpu: 100m
+#   memory: 128Mi
+
+securityContext:
+  fsGroup: 10001
+  runAsGroup: 10001
+  runAsNonRoot: true
+  runAsUser: 10001
+
+containerSecurityContext:
+  readOnlyRootFilesystem: true
+
+service:
+  type: NodePort # <--- ИЗМЕНЕНО: теперь Loki доступен через NodePort
+  nodePort: 31000 # <--- ДОБАВЛЕНО: Вы можете выбрать любой свободный порт в диапазоне 30000-32767
+  port: 3100 # Внутренний порт сервиса
+  annotations: {}
+  labels: {}
+  targetPort: http-metrics # Целевой порт контейнера Loki
+
+serviceAccount:
+  create: true
+  name:
+  annotations: {}
+  automountServiceAccountToken: true
+
+terminationGracePeriodSeconds: 4800
+
+tolerations: []
+
+topologySpreadConstraints:
+  enabled: false
+
+podDisruptionBudget: {}
+
+updateStrategy:
+  type: RollingUpdate
+
+serviceMonitor:
+  enabled: false
+
+initContainers: []
+extraContainers: []
+extraVolumes: []
+extraVolumeMounts: []
+extraPorts: []
+env: []
+alerting_groups: []
+useExistingAlertingGroup:
+  enabled: false
+  configmapName: ""

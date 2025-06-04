@@ -74,6 +74,11 @@ data:
     endpoint = "http://loki.argocd.svc.cluster.local:3100/loki/api/v1/push"
     encoding.codec = "json"
 
+    # Настройка healthcheck для Loki
+    healthcheck.enabled = true # <--- Включить healthcheck
+    healthcheck.uri = "http://loki.argocd.svc.cluster.local:3100/ready" # <--- Указать путь для healthcheck
+
+
     [sinks.loki_from_ks8_current-time.labels] # <--- ИЗМЕНЕНО
     job = "current-time"
     application = "current-time-app" # Хорошая дополнительная метка для Loki

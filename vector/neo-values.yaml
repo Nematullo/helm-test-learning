@@ -1,4 +1,16 @@
 agent:
+  # ... ваши текущие настройки config, resources, service ...
+
+  # Обязательно: Установите тип развертывания как DaemonSet
+  # В официальном чарте Vector это обычно так:
+  kind: DaemonSet # <-- Добавьте/измените эту строку!
+  # Или, если чарт использует булевы флаги:
+   daemonset:
+     enabled: true
+   deployment:
+     enabled: false # Если DaemonSet enabled, Deployment должен быть disabled
+
+
   config: |
     # Источник: чтение логов из конкретной директории на хосте
     # Убедитесь, что приложение current-time-app действительно пишет логи сюда
@@ -59,7 +71,7 @@ agent:
     type = "console"
     inputs = ["kubernetes_current_time_app_logs"] # Теперь получаем данные напрямую из фильтрованного источника
     encoding.codec = "json" # Вывод в JSON
-    
+
   resources:
     limits:
       cpu: 100m

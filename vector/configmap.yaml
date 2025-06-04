@@ -23,11 +23,13 @@ data:
     # Если ваше приложение current-time-app-0 имеет label 'app: current-time-app', используйте это:
     # pod_labels = { "app" = "current-time-app" }
     # Или, если оно всегда называется "current-time-app-0" и вы хотите рискнуть на устаревший параметр:
+    # (СТРОКА 'pod_name_passthrough' ПОЛНОСТЬЮ УДАЛЕНА ИЗ ФАЙЛА)
     # Если вы хотите собирать логи со всех подов, но потом фильтровать, удалите строку выше
     exclude_paths_glob_patterns = ["/var/log/pods/*/vector/*.log"]
 
-  # Вместо pod_fields используем extra_field_selector для фильтрации по имени пода
-    extra_field_selector = "metadata.name=current-time-app-0" # <-- ДОБАВИТЬ ЭТУ СТРОКУ
+    # Вместо pod_fields используем extra_field_selector для фильтрации по имени пода
+    # ВНИМАНИЕ: ЭТА СТРОКА ДОЛЖНА БЫТЬ С ТЕМ ЖЕ ОТСТУПОМ, ЧТО И exclude_paths_glob_patterns !
+    extra_field_selector = "metadata.name=current-time-app-0" 
 
     # Sink: отправка логов из файла в Loki (если Loki настроен)
     [sinks.loki_from_file]

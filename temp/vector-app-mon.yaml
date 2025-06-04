@@ -21,7 +21,7 @@ spec:
     
   helm: 
     valueFiles:
-      - neo-values.yaml 
+      - $argocd_app_source_1/neo-values.yaml 
 
   destination:
     server: 'https://kubernetes.default.svc'

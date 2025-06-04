@@ -32,7 +32,6 @@ data:
     extra_field_selector = "metadata.name=current-time-app-0" 
 
 
-    ---
     ### НАСТРАИВАЕМЫЙ ФИЛЬТР МЕТАДАННЫХ KUBERNETES ###
     #
     # Эта трансформация `remove_fields` позволяет вам ВЫБИРАТЕЛЬНО удалять метаданные из логов.
@@ -62,7 +61,6 @@ data:
       "kubernetes.pod_ips",        # Список IP-адресов пода
       "kubernetes.pod_uid"         # Уникальный ID пода (UUID)
     ]
-    ---
 
     # Sink: отправка логов из файла в Loki (если Loki настроен)
     [sinks.loki_from_file]

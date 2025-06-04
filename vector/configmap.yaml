@@ -6,6 +6,10 @@ metadata:
   namespace: argocd         # Неймспейс, где будет развернут Vector
 data:
   vector.toml: |
+    # В самом начале файла vector.toml, если этой секции нет
+    [general]
+    log_level = "debug" # <--- ДОБАВЬТЕ ЭТУ СТРОКУ
+
     # Источник: чтение логов из конкретной директории на хосте (если приложение пишет в файл)
     [sources.current_time_logs_file]
     type = "file"

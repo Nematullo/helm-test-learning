@@ -26,7 +26,8 @@ data:
     # Если вы хотите собирать логи со всех подов, но потом фильтровать, удалите строку выше
     exclude_paths_glob_patterns = ["/var/log/pods/*/vector/*.log"]
 
-    pod_fields = { "metadata.name" = "current-time-app-0" } # <-- ЭТА СТРОКА ДОЛЖНА БЫТЬ
+  # Вместо pod_fields используем extra_field_selector для фильтрации по имени пода
+    extra_field_selector = "metadata.name=current-time-app-0" # <-- ДОБАВИТЬ ЭТУ СТРОКУ
 
     # Sink: отправка логов из файла в Loki (если Loki настроен)
     [sinks.loki_from_file]

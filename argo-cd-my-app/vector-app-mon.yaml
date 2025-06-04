@@ -8,12 +8,6 @@ spec:
 
   sources: 
 
---
-  - repoURL: https://helm.vector.dev 
-    chart: vector                 # Имя чарта в этом репозитории
-    targetRevision: 0.20.0        # <--- ВЕРСИЯ ЧАРТА Vector, которую вы хотите использовать
-
- --
   - repoURL: 'https://github.com/nematullo/helm-test-learning.git' # URL ВАШЕГО GIT-РЕПОЗИТОРИЯ
     targetRevision: HEAD         
     path: vector      

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: current-time-headless-service # Имя этого сервиса (должно совпадать с serviceName в StatefulSet)
+  namespace: argocd                   # Убедитесь, что namespace правильный
+spec:
+  clusterIP: None                     # <--- КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: делает сервис "headless"
+  selector:
+    app: current-time-app             # Метка, соответствующая подам StatefulSet
+  ports:
+    - protocol: TCP
+      port: 1001
+      targetPort: 1001
+      name: http-web                  # Должно совпадать с именованным портом в Pod'е StatefulSet
+  # type: NodePort                    # Не используется для headless-сервисов

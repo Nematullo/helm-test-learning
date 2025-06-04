@@ -69,7 +69,8 @@ data:
     [sinks.loki_from_ks8_current-time]
     type = "loki"
     inputs = ["customize_kube_metadata"] # <--- Вход теперь от НОВОЙ трансформации!
-    endpoint = "http://192.168.49.2:31000"
+    endpoint = "http://loki.argocd.svc.cluster.local:3100/loki/api/v1/push"
+    #endpoint = "http://192.168.49.2:31000"
     #endpoint = "http://10.100.150.129:3100/loki/api/v1/push"
     encoding.codec = "json"
 

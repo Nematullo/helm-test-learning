@@ -23,7 +23,6 @@ data:
     # Если ваше приложение current-time-app-0 имеет label 'app: current-time-app', используйте это:
     # pod_labels = { "app" = "current-time-app" }
     # Или, если оно всегда называется "current-time-app-0" и вы хотите рискнуть на устаревший параметр:
-    # pod_name_passthrough = ["current-time-app-0"] # <-- Используем, как вы просили. Если не работает, переключим на filter/labels.
     # Если вы хотите собирать логи со всех подов, но потом фильтровать, удалите строку выше
     exclude_paths_glob_patterns = ["/var/log/pods/*/vector/*.log"]
 

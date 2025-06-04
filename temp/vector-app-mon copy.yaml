@@ -13,9 +13,9 @@ spec:
     path: vector      
 
     
-  #helm: 
-  #  valueFiles:
-  #    - neo-values.yaml 
+  helm: 
+    valueFiles:
+      - neo-values.yaml 
 
   destination:
     server: 'https://kubernetes.default.svc'

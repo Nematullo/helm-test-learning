@@ -1,0 +1,99 @@
+# kubernetes-vector-agent/daemonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: vector-agent # Имя DaemonSet
+  namespace: argocd   # Неймспейс, где будет развернут Vector
+  labels:
+    app.kubernetes.io/name: vector
+    app.kubernetes.io/component: agent
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vector
+      app.kubernetes.io/component: agent
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: vector
+        app.kubernetes.io/component: agent
+    spec:
+      serviceAccountName: vector-agent # Используем ServiceAccount, созданный выше
+      tolerations:
+        # Добавьте, если у вас есть узлы с taint'ами (например, master-узлы)
+        # - key: "node-role.kubernetes.io/master"
+        #   operator: "Exists"
+        #   effect: "NoSchedule"
+        # - key: "node-role.kubernetes.io/control-plane"
+        #   operator: "Exists"
+        #   effect: "NoSchedule"
+      containers:
+        - name: vector
+          image: timberio/vector:0.35.0-distroless-libc # Рекомендуется использовать более новую версию, например 0.35.0
+          imagePullPolicy: IfNotPresent # <--- Убедитесь, что это так!
+          args:
+            - "--config=/etc/vector/vector.toml"
+          env:
+            - name: VECTOR_SELF_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName # Автоматически получает имя узла
+            - name: VECTOR_SELF_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name # Автоматически получает имя пода Vector
+            - name: VECTOR_SELF_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace # Автоматически получает неймспейс пода Vector
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          volumeMounts:
+            # Монтируем ConfigMap с конфигурацией
+            - name: config
+              mountPath: /etc/vector
+              readOnly: true
+            # Монтирования для сбора логов stdout/stderr контейнеров
+            - name: varlogpods
+              mountPath: /var/log/pods
+              readOnly: true
+            - name: varlogcontainers
+              mountPath: /var/log/containers
+              readOnly: true
+            - name: varlibdockercontainers
+              mountPath: /var/lib/docker/containers
+              readOnly: true
+            # Если ваше приложение пишет логи в hostPath
+            - name: current-time-app-logs-host
+              mountPath: /var/log/k8s-apps/current-time-app-logs
+              readOnly: true
+      volumes:
+        # Том для ConfigMap
+        - name: config
+          configMap:
+            name: vector-agent-config # Ссылка на ConfigMap, созданный выше
+
+        # Тома для сбора логов stdout/stderr контейнеров
+        - name: varlogpods
+          hostPath:
+            path: /var/log/pods
+            type: Directory
+        - name: varlogcontainers
+          hostPath:
+            path: /var/log/containers
+            type: Directory
+        - name: varlibdockercontainers
+          hostPath:
+            path: /var/lib/docker/containers
+            type: DirectoryOrCreate # DirectoryOrCreate для hostPath'ов, которые могут не существовать изначально
+
+        # Если ваше приложение пишет логи в hostPath
+        - name: current-time-app-logs-host
+          hostPath:
+            path: /var/log/k8s-apps/current-time-app-logs
+            type: DirectoryOrCreate

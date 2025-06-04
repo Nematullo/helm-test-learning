@@ -1,0 +1,50 @@
+# kubernetes-vector-agent/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vector-agent-config # Имя ConfigMap
+  namespace: argocd         # Неймспейс, где будет развернут Vector
+data:
+  vector.toml: |
+    # Источник: чтение логов из конкретной директории на хосте (если приложение пишет в файл)
+    [sources.current_time_logs_file]
+    type = "file"
+    include = ["/var/log/k8s-apps/current-time-app-logs/*.log"]
+    ignore_older = 86400
+
+    # Источник: Сбор логов stdout/stderr ТОЛЬКО для приложения current-time-app
+    [sources.kubernetes_current_time_app_logs]
+    type = "kubernetes_logs"
+    # Для `kubernetes_logs` настоятельно рекомендуется включить `add_metadata`,
+    # даже если вы не хотите ее выводить, это поможет Vector'у лучше парсить.
+    # Но если вы хотите АБСОЛЮТНО без преобразований, то оставляем как есть.
+    # Важно: `pod_name_passthrough` - это устаревший параметр.
+    # Современный способ фильтрации прямо в источнике `kubernetes_logs` - это `pod_labels` или `namespaces`.
+    # Если ваше приложение current-time-app-0 имеет label 'app: current-time-app', используйте это:
+    # pod_labels = { "app" = "current-time-app" }
+    # Или, если оно всегда называется "current-time-app-0" и вы хотите рискнуть на устаревший параметр:
+    pod_name_passthrough = ["current-time-app-0"] # <-- Используем, как вы просили. Если не работает, переключим на filter/labels.
+    # Если вы хотите собирать логи со всех подов, но потом фильтровать, удалите строку выше
+    exclude_paths = ["/var/log/pods/*/vector/*.log"] # Исключаем логи самого Vector
+
+    # Sink: отправка логов из файла в Loki (если Loki настроен)
+    [sinks.loki_from_file]
+    type = "loki"
+    inputs = ["current_time_logs_file"]
+    endpoint = "http://loki-mon.argocd.svc.cluster.local:3100/loki/api/v1/push"
+    encoding.codec = "json"
+
+    [sinks.loki_from_file.labels]
+    job = "current-time"
+
+    # Sink: вывод логов из файла в stdout Vector'а
+    [sinks.console_from_file]
+    type = "console"
+    inputs = ["current_time_logs_file"]
+    encoding.codec = "json"
+
+    # Sink: Вывод логов stdout/stderr приложения в stdout Vector'а БЕЗ ДОБАВЛЕНИЯ МЕТАДАННЫХ
+    [sinks.console_kubernetes_current_time_app_logs]
+    type = "console"
+    inputs = ["kubernetes_current_time_app_logs"]
+    encoding.codec = "json" # Вывод в JSON для удобства чтения

@@ -8,7 +8,7 @@ agent:
    daemonset:
      enabled: true
    deployment:
-     enabled: false # Если DaemonSet enabled, Deployment должен быть disabled
+     enabled: false # Если DaemonSet enabled, Deployment должен быть disabled 
 
 
   config: |

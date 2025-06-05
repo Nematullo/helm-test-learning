@@ -14,6 +14,11 @@ spec:
       labels:
         app: loki
     spec:
+          # Добавляем securityContext на уровне Pod Spec
+      securityContext:
+        fsGroup: 1000 # <-- ОЧЕНЬ ВАЖНО! Устанавливаем GID для смонтированных томов
+        runAsUser: 1000 # <-- Запускаем контейнер от пользователя с UID 1000
+        runAsGroup: 1000 # <-- Запускаем контейнер от группы с GID 1000
       containers:
         - name: loki
           image: grafana/loki:2.8.0

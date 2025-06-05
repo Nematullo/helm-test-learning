@@ -29,8 +29,11 @@ spec:
         #   effect: "NoSchedule"
       containers:
         - name: vector
-          image: timberio/vector:0.35.0-distroless-libc # Рекомендуется использовать более новую версию, например 0.35.0
-          imagePullPolicy: IfNotPresent # <--- Убедитесь, что это так!
+          image: timberio/vector:0.35.0-alpine
+          imagePullPolicy: IfNotPresent
+          #command: ["/bin/sh", "-c", "while true; do sleep 3600; done"]
+          #image: timberio/vector:0.35.0-distroless-libc # Рекомендуется использовать более новую версию, например 0.35.0
+          #imagePullPolicy: IfNotPresent # <--- Убедитесь, что это так!
           args:
             - "--config=/etc/vector/vector.toml"
           env:

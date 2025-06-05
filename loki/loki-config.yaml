@@ -9,7 +9,7 @@ data:
 
     server:
       http_listen_port: 3100
-      http_grpc_port: 9095
+      grpc_listen_port: 9095
 
     ingester:
       lifecycler:

@@ -1,0 +1,19 @@
+# /home/neo/Документы/helm-test-learning/argocd-app-kube/argocd-ssh-known-hosts-cm.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-ssh-known-hosts-cm
+  namespace: argocd
+data:
+  # Сюда вы можете добавить публичные ключи Git-хостов,
+  # если ваши репозитории доступны по SSH и вы хотите, чтобы Argo CD доверял им.
+  # Например:
+  # github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hLu5...
+  # bitbucket.org ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDt...
+  #
+  # Если вы используете только HTTPS для доступа к репозиториям,
+  # то эту секцию можно оставить пустой.
+  ssh_known_hosts: |
+    # Добавьте свои известные хосты здесь.
+    # Например:
+    # git.example.com ssh-rsa AAAA...

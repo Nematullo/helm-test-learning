@@ -1,13 +1,19 @@
+# /home/neo/Документы/helm-test-learning/argocd-app-kube/argocd-repo-server-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
+  labels:
+    app.kubernetes.io/name: argocd-repo-server
+    app.kubernetes.io/part-of: argocd
   name: argocd-repo-server
   namespace: argocd
 spec:
+  type: ClusterIP # Изменено с NodePort на ClusterIP
   selector:
-    app: argocd-repo-server
+    app.kubernetes.io/name: argocd-repo-server
   ports:
-    - protocol: TCP
-      port: 8081
-      targetPort: 8081
-      name: grpc
+  - name: tcp-repo-server
+    port: 8081
+    protocol: TCP
+    targetPort: 8081
+    # nodePort: 30081 # Удален, так как тип ClusterIP

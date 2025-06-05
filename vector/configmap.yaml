@@ -58,17 +58,29 @@ data:
       del(.kubernetes.pod_ips)        # Удаляем список IP-адресов пода
       del(.kubernetes.pod_uid)        # Удаляем уникальный ID пода (UUID)
 
-      # Поля, которые вы хотели ОСТАВИТЬ, здесь не нужно удалять
+            # Поля, которые вы хотели ОСТАВИТЬ, здесь не нужно удалять
       # (т.е., они не перечислены с 'del()')
       # kubernetes.container_name
       # kubernetes.pod_name
       # kubernetes.pod_namespace
     ''' # <--- СКРИПТ VRL ЗАВЕРШАЕТСЯ ЭТИМИ ТРЕМЯ КАВЫЧКАМИ
 
+      # 👉 ДОБАВЬ remap ТАЙМСТАМПА, ЧТОБЫ ИСКЛЮЧИТЬ "out_of_order":
+    # Этот remap убедится, что .timestamp — всегда текущий.
+    # Если лог не содержит временной метки или она не монотонна, Loki может выбрасывать ошибку.
+    # Пример ниже: принудительно задаём время события как текущее (UTC).
+    [transforms.force_timestamp]
+    type = "remap"
+    inputs = ["customize_kube_metadata"]
+    source = '''
+    .timestamp = now()
+    '''
+
     # Sink: отправка логов в Loki
     [sinks.loki_from_ks8_current-time]
     type = "loki"
-    inputs = ["customize_kube_metadata"] # <--- Вход теперь от НОВОЙ трансформации!
+    inputs = ["force_timestamp"] # <--- Вход теперь от НОВОЙ трансформации!
+    #inputs = ["customize_kube_metadata"] # <--- Вход теперь от НОВОЙ трансформации!
     endpoint = "http://loki.argocd.svc.cluster.local:3100/loki/api/v1/push"
     #endpoint = "http://192.168.49.2:31000"
     #endpoint = "http://10.100.150.129:3100/loki/api/v1/push"
@@ -83,14 +95,15 @@ data:
     instance = "{{ kubernetes.pod_name }}" # <-- ИЗМЕНЕНО: используем имя пода приложения для уникальности
 
     # Sink: вывод логов из файла в stdout Vector'а
-    [sinks.console_from_file]
-    type = "console"
-    inputs = ["current_time_logs_file"]
-    encoding.codec = "json"
+    #[sinks.console_from_file]
+    #type = "console"
+    #inputs = ["current_time_logs_file"]
+    #encoding.codec = "json"
 
     # Sink: Вывод логов stdout/stderr приложения в stdout Vector'а БЕЗ ДОБАВЛЕНИЯ МЕТАДАННЫХ
     [sinks.console_kubernetes_current_time_app_logs]
     type = "console"
+    inputs = ["force_timestamp"]
     #inputs = ["kubernetes_current_time_app_logs"]
-    inputs = ["customize_kube_metadata"] # <--- Теперь вход от НОВОЙ трансформации!
+    #inputs = ["customize_kube_metadata"] # <--- Теперь вход от НОВОЙ трансформации!
     encoding.codec = "json" # Вывод в JSON для удобства чтения

@@ -25,24 +25,25 @@ data:
     schema_config:
       configs:
         - from: 2020-10-24
-          store: tsdb # boltdb-shipper было # было inmemory
+          store: boltdb-shipper # было inmemory
           object_store: filesystem
-          schema: v12  #v11 было
+          schema: v11
           index:
             prefix: index_
             period: 24h
 
     storage_config:
       filesystem:
-        directory: /loki/chunks # Здесь будут храниться сами логи (чанки)
+        directory: /loki/chunks
 
-
-      tsdb_shipper:
-        active_index_directory: /loki/index-tsdb # Отдельная директория для индекса TSDB
-        cache_location: /loki/cache-tsdb         # Отдельная директория для кэша TSDB
-        resync_interval: 5m
-        shared_store: filesystem
-
+      # ДОБАВЬТЕ ЭТОТ БЛОК ДЛЯ BOLTDB-SHIPPER
+      # Это конфигурирует хранилище для индекса (то, что было inmemory).
+      boltdb_shipper:
+        active_index_directory: /loki/index # Куда будет писаться активный индекс
+        cache_location: /loki/cache       # Куда будет писаться кэш индекса
+        resync_interval: 5s
+        shared_store: filesystem # Указывает, что индекс тоже использует файловую систему
+      # Конец нового блока
 
 
     limits_config:

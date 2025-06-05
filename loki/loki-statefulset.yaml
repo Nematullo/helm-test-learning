@@ -28,6 +28,8 @@ spec:
               mountPath: /etc/loki
             - name: storage
               mountPath: /loki
+            - name: wal
+              mountPath: /wal
       volumes:
         - name: config
           configMap:
@@ -43,4 +45,12 @@ spec:
         resources:
           requests:
             storage: 5Gi
+        storageClassName: standard
+    - metadata:
+        name: wal
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
         storageClassName: standard

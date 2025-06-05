@@ -36,14 +36,14 @@ data:
       filesystem:
         directory: /loki/chunks
 
-    # ДОБАВЬТЕ ЭТОТ БЛОК ДЛЯ BOLTDB-SHIPPER
-    # Это конфигурирует хранилище для индекса (то, что было inmemory).
-    boltdb_shipper:
-      active_index_directory: /loki/index # Куда будет писаться активный индекс
-      cache_location: /loki/cache       # Куда будет писаться кэш индекса
-      resync_interval: 5s
-      shared_store: filesystem # Указывает, что индекс тоже использует файловую систему
-    # Конец нового блока
+      # ДОБАВЬТЕ ЭТОТ БЛОК ДЛЯ BOLTDB-SHIPPER
+      # Это конфигурирует хранилище для индекса (то, что было inmemory).
+      boltdb_shipper:
+        active_index_directory: /loki/index # Куда будет писаться активный индекс
+        cache_location: /loki/cache       # Куда будет писаться кэш индекса
+        resync_interval: 5s
+        shared_store: filesystem # Указывает, что индекс тоже использует файловую систему
+      # Конец нового блока
 
 
     limits_config:

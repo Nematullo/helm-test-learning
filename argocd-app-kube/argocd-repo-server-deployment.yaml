@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+  namespace: argocd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: argocd-repo-server
+  template:
+    metadata:
+      labels:
+        app: argocd-repo-server
+    spec:
+      serviceAccountName: argocd-repo-server
+      containers:
+        - name: argocd-repo-server
+          image: quay.io/argoproj/argocd:v2.11.2 # Используйте актуальную стабильную версию Argo CD
+          command:
+            - argocd-repo-server
+          ports:
+            - containerPort: 8081
+              name: http-repo
+          volumeMounts:
+            - name: ssh-known-hosts
+              mountPath: /etc/ssh/ssh_known_hosts
+            - name: tls-certs
+              mountPath: /etc/argocd/tls
+          livenessProbe:
+            tcpSocket:
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: ssh-known-hosts
+          emptyDir: {}
+        - name: tls-certs
+          emptyDir: {}

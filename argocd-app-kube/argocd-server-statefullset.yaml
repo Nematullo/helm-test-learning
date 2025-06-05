@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: argocd-server
+  namespace: argocd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: argocd-server
+  serviceName: argocd-server
+  template:
+    metadata:
+      labels:
+        app: argocd-server
+    spec:
+      serviceAccountName: argocd-server
+      containers:
+        - name: argocd-server
+          image: quay.io/argoproj/argocd:v2.11.2 # Используйте актуальную стабильную версию Argo CD
+          command:
+            - argocd-server
+            - --insecure
+            - --static-assets
+            - /shared/app
+            - --http-port=8080
+            - --https-port=8081
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 8081
+              name: https
+          volumeMounts:
+            - name: argocd-server-tls
+              mountPath: /app/tls
+              readOnly: true
+            - name: argocd-server-ssh-known-hosts
+              mountPath: /etc/ssh/ssh_known_hosts
+              readOnly: true
+            - name: argocd-server-tls-certs
+              mountPath: /etc/argocd/tls
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: argocd-server-tls
+          emptyDir: {}
+        - name: argocd-server-ssh-known-hosts
+          emptyDir: {}
+        - name: argocd-server-tls-certs
+          emptyDir: {}
+  podManagementPolicy: OrderedReady # Обеспечивает предсказуемое имя пода (argocd-server-0)

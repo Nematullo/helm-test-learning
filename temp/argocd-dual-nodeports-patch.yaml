@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-server
+  namespace: argocd # Убедитесь, что это ваш неймспейс Argo CD
+spec:
+  type: NodePort
+  ports:
+    - name: http # Имя для HTTP порта
+      protocol: TCP
+      port: 80 # Внешний порт сервиса
+      targetPort: 8080 # Внутренний HTTP-порт Argo CD сервера
+      nodePort: 30080 # Ваш NodePort для HTTP
+    - name: https # Имя для HTTPS порта
+      protocol: TCP
+      port: 443 # Внешний порт сервиса
+      targetPort: 8443 # Внутренний HTTPS-порт Argo CD сервера
+      nodePort: 30443 # Ваш NodePort для HTTPS

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-application-controller
+  namespace: argocd
+spec:
+  selector:
+    app: argocd-application-controller
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 8082
+      name: metrics

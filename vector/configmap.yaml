@@ -81,9 +81,9 @@ data:
     type = "loki"
     inputs = ["force_timestamp"] # <--- Вход теперь от НОВОЙ трансформации!
     #inputs = ["customize_kube_metadata"] # <--- Вход теперь от НОВОЙ трансформации!
-    #endpoint = "http://loki.argocd.svc.cluster.local:3100/loki/api/v1/push"
+    endpoint = "http://loki.argocd.svc.cluster.local:3100/loki/api/v1/push"
     #endpoint = "http://loki.argocd.svc.cluster.local:3100"
-    endpoint = "http://192.168.49.2:31000"
+    #endpoint = "http://192.168.49.2:31000"
     #endpoint = "http://10.100.150.129:3100/loki/api/v1/push"
     encoding.codec = "json"
 

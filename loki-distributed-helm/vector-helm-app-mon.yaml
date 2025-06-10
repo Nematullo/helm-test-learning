@@ -13,7 +13,7 @@ spec:
     path: loki-distributed-helm
     helm: 
       valueFiles:
-        - neo-values.yaml 
+        - values.yaml 
 
     
 

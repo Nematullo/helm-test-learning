@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-application-controller
+  namespace: argocd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: argocd-application-controller
+  template:
+    metadata:
+      labels:
+        app: argocd-application-controller
+    spec:
+      serviceAccountName: argocd-application-controller
+      containers:
+        - name: argocd-application-controller
+          image: quay.io/argoproj/argocd:v2.11.2 # Используйте актуальную стабильную версию Argo CD
+          command:
+            - argocd-application-controller
+          env:
+            - name: ARGOCD_CONTROLLER_RECONCILE_TIMEOUT
+              value: "60s"
+          volumeMounts:
+            - name: argocd-tls-certs
+              mountPath: /app/config/tls
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8082
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8082
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: argocd-tls-certs
+          emptyDir: {}

@@ -1,0 +1,24 @@
+# /home/neo/Документы/helm-test-learning/argocd-app-kube/argocd-dex-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: argocd-dex-server
+    app.kubernetes.io/part-of: argocd
+  name: argocd-dex-server
+  namespace: argocd
+spec:
+  type: ClusterIP # Изменено с NodePort на ClusterIP
+  selector:
+    app.kubernetes.io/name: argocd-dex-server
+  ports:
+  - name: http
+    port: 5556
+    protocol: TCP
+    targetPort: 5556
+    # nodePort: 30556 # Удален
+  - name: grpc
+    port: 5557
+    protocol: TCP
+    targetPort: 5557
+    # nodePort: 30557 # Удален

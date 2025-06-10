@@ -1,0 +1,90 @@
+# /home/neo/Документы/helm-test-learning/argocd-app-kube/argocd-server-statefullset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: argocd-server
+  namespace: argocd
+  labels: # Добавляем общие метки для лучшей идентификации
+    app.kubernetes.io/component: server
+    app.kubernetes.io/name: argocd-server
+    app.kubernetes.io/part-of: argocd
+spec:
+  serviceName: argocd-server # Должно соответствовать имени Service argocd-server
+  replicas: 1 # Обычно для StatefulSet сервера Argo CD достаточно одной реплики
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-server # Селектор должен соответствовать меткам подов
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: server
+        app.kubernetes.io/name: argocd-server
+        app.kubernetes.io/part-of: argocd
+    spec:
+      serviceAccountName: argocd-server # Убедитесь, что этот ServiceAccount существует
+      containers:
+        - name: argocd-server
+          image: quay.io/argoproj/argocd:v2.11.2 # Важно использовать ту же версию, что и в install.yaml
+          command:
+            - argocd-server
+            - --insecure # Используйте только для тестирования. В продакшене настройте TLS.
+            - --static-assets
+            - /shared/app
+            - --http-port=8080
+            - --https-port=8443 # В официальных манифестах HTTPS порт 8443, а не 8081
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 8443 # Соответствует 8443 выше
+              name: https
+          volumeMounts:
+            - name: argocd-server-tls
+              mountPath: /app/config/tls # Исправлен mountPath для TLS, согласно официальному install.yaml
+              readOnly: true
+            - name: argocd-server-tls-certs
+              mountPath: /etc/argocd/tls # Дополнительные TLS сертификаты
+              readOnly: true
+            # ИСПРАВЛЕНИЕ ЗДЕСЬ: используем subPath для монтирования файла из ConfigMap
+            - name: argocd-server-ssh-known-hosts
+              mountPath: /etc/ssh/ssh_known_hosts # Путь внутри контейнера, где ожидается файл
+              subPath: ssh_known_hosts # Это указывает, что мы монтируем *ключ* 'ssh_known_hosts' из ConfigMap как файл
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          env: # Добавим важные переменные окружения, которые обычно присутствуют
+            - name: REDIS_SERVER
+              value: argocd-redis.argocd.svc.cluster.local:6379 # Убедитесь, что Redis доступен по этому адресу
+            # Добавьте другие переменные окружения из официального install.yaml, если они нужны
+            # Например, для настроек логгирования, кэширования и т.д.
+            # - name: ARGOCD_SERVER_LOGFORMAT
+            #   valueFrom:
+            #     configMapKeyRef:
+            #       name: argocd-cmd-params-cm
+            #       key: server.log.format
+            #       optional: true
+      volumes:
+        - name: argocd-server-tls
+          emptyDir: {} # Временное хранилище для TLS
+        - name: argocd-server-tls-certs
+          emptyDir: {} # Временное хранилище для доп. TLS сертификатов (если они используются)
+        # ИСПРАВЛЕНИЕ ЗДЕСЬ: теперь мы ссылаемся на ConfigMap
+        - name: argocd-server-ssh-known-hosts
+          configMap:
+            name: argocd-ssh-known-hosts-cm # Ссылаемся на наш новый ConfigMap
+            items:
+              - key: ssh_known_hosts # Это ключ внутри ConfigMap
+                path: ssh_known_hosts # Это имя файла, которое будет создано внутри mountPath
+            optional: true # Сделаем его опциональным, если ConfigMap не существует
+  podManagementPolicy: OrderedReady # Обеспечивает предсказуемое имя пода (argocd-server-0)

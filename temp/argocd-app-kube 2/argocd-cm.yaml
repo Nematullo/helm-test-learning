@@ -1,0 +1,21 @@
+# /home/neo/Документы/helm-test-learning/argocd-app-kube/argocd-cm.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd # Убедитесь, что это ваш неймспейс Argo CD
+data:
+  # Настройки для OIDC (Keycloak)
+  oidc.config: |
+    name: Keycloak
+    issuer: http://192.168.49.2:30085/realms/master
+    clientID: argocd
+    clientSecret: hyMsqikAkBVgzd7l4YSPoqR1XioVHpIs
+    requestedScopes: ["openid", "profile", "email", "groups"]
+    groupClaim: groups
+  
+  # Публичный URL вашей инсталляции Argo CD
+  url: http://192.168.49.2:30080
+
+  # Параметры сервера (insecure)
+  server.insecure: "true" # Значение должно быть строкой "true" или "false"

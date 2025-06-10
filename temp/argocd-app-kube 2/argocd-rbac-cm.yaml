@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-rbac-cm
+  namespace: argocd # Убедитесь, что это ваш неймспейс Argo CD
+data:
+  # rbac.enabled: "true" # Эту строку обычно не нужно явно указывать. RBAC включится при наличии ConfigMap.
+
+  policy.csv: |
+    g, ArgoCDAdmins, role:admin
+    g, ArgoCD_dev, role:project-dev
+    g, ArgoCD_prod, role:project-prod
+    g, ArgoCDAdmins2, role:admin
+
+    p, role:project-dev, projects, get, dev, allow
+    p, role:project-dev, applications, *, dev/*, allow
+    p, role:project-dev, repositories, get, *, allow
+
+    p, role:project-prod, projects, get, prod, allow
+    p, role:project-prod, applications, *, prod/*, allow
+    p, role:project-prod, repositories, get, *, allow
+
+  # Здесь также можно добавить other настроийки RBAC, если необходимо
+  # scopes: '[groups]' # Пример: если вы используете OIDC группы

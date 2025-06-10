@@ -1,0 +1,71 @@
+#!/bin/bash
+
+echo "Начинаем полную деинсталляцию Argo CD из кластера Kubernetes."
+
+NAMESPACE="argocd"
+
+# --- 1. Удаляем неймспейс Argo CD и все его содержимое ---
+echo "Шаг 1/2: Удаляем неймспейс '$NAMESPACE' и все его ресурсы..."
+if kubectl get namespace "$NAMESPACE" &>/dev/null; then
+    echo "Неймспейс '$NAMESPACE' найден. Приступаем к удалению..."
+    # --wait=true ожидает завершения удаления, --timeout устанавливает максимальное время ожидания
+    kubectl delete namespace "$NAMESPACE" --wait=true --timeout=300s || {
+        echo "Ошибка: Не удалось удалить неймспейс '$NAMESPACE' или операция удаления заняла слишком много времени."
+        echo "Возможно, существуют зависшие ресурсы. Попробуйте удалить их вручную или увеличьте таймаут."
+        exit 1
+    }
+    echo "Неймспейс '$NAMESPACE' успешно удален."
+else
+    echo "Неймспейс '$NAMESPACE' не найден. Пропускаем удаление неймспейса."
+fi
+
+# --- 2. Удаляем кластерно-специфичные ресурсы Argo CD ---
+echo ""
+echo "Шаг 2/2: Удаляем кластерно-специфичные ресурсы Argo CD (CRD, ClusterRoles, ClusterRoleBindings)..."
+
+# Удаляем CustomResourceDefinitions (CRD)
+echo "Удаляем CustomResourceDefinitions (CRD) Argo CD..."
+CRDS_TO_DELETE=(
+    "applications.argoproj.io"
+    "applicationsets.argoproj.io"
+    "appprojects.argoproj.io"
+)
+for crd in "${CRDS_TO_DELETE[@]}"; do
+    if kubectl get crd "$crd" &>/dev/null; then
+        echo "Удаляем CRD: $crd"
+        kubectl delete crd "$crd" --wait=true --timeout=60s || echo "Предупреждение: Не удалось удалить CRD $crd. Возможно, он используется или имеет финализаторы."
+    else
+        echo "CRD '$crd' не найден. Пропускаем."
+    fi
+done
+
+# Удаляем ClusterRoles
+echo "Удаляем ClusterRoles Argo CD..."
+# Ищем ClusterRoles, названия которых начинаются с "argocd-"
+ARGO_CLUSTER_ROLES=$(kubectl get clusterrole -o jsonpath='{.items[*].metadata.name}' | tr ' ' '\n' | grep '^argocd-')
+if [ -n "$ARGO_CLUSTER_ROLES" ]; then
+    for role in $ARGO_CLUSTER_ROLES; do
+        echo "Удаляем ClusterRole: $role"
+        kubectl delete clusterrole "$role" --ignore-not-found=true --wait=true --timeout=60s
+    done
+else
+    echo "ClusterRoles Argo CD не найдены."
+fi
+
+# Удаляем ClusterRoleBindings
+echo "Удаляем ClusterRoleBindings Argo CD..."
+# Ищем ClusterRoleBindings, названия которых начинаются с "argocd-"
+ARGO_CLUSTER_ROLE_BINDINGS=$(kubectl get clusterrolebinding -o jsonpath='{.items[*].metadata.name}' | tr ' ' '\n' | grep '^argocd-')
+if [ -n "$ARGO_CLUSTER_ROLE_BINDINGS" ]; then
+    for rbinding in $ARGO_CLUSTER_ROLE_BINDINGS; do
+        echo "Удаляем ClusterRoleBinding: $rbinding"
+        kubectl delete clusterrolebinding "$rbinding" --ignore-not-found=true --wait=true --timeout=60s
+    done
+else
+    echo "ClusterRoleBindings Argo CD не найдены."
+fi
+
+echo ""
+echo "Полная деинсталляция Argo CD завершена."
+echo "Настоятельно рекомендуется остановить и запустить Minikube для обеспечения полностью чистого состояния:"
+echo "minikube stop && minikube start"

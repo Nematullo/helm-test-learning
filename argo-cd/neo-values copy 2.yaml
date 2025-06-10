@@ -1,6 +1,8 @@
 # /путь/к/вашему/values.yaml
 # Это полный файл values.yaml, который вы должны использовать для helm upgrade
 global:
+  redis:
+    password: "9xkVqH6fzD3YvTz1"
 
 configs:
   secret:
@@ -81,8 +83,6 @@ dex:
 dex:
   enabled: false
 
-  redis:
-    password: "9xkVqH6fzD3YvTz1"
 
 #redis:
 #  auth:

@@ -1,18 +1,5 @@
 role: "agent"
 
-agent:
-  # ... ваши текущие настройки config, resources, service ...
-
-  # Обязательно: Установите тип развертывания как DaemonSet
-  # В официальном чарте Vector это обычно так:
-  kind: DaemonSet # <-- Добавьте/измените эту строку!
-  # Или, если чарт использует булевы флаги:
-   daemonset:
-     enabled: true
-   deployment:
-     enabled: false # Если DaemonSet enabled, Deployment должен быть disabled 
-
-
   config: |
     # Источник: Сбор логов stdout/stderr ТОЛЬКО для приложения current-time-app
     [sources.kubernetes_current_time_app_logs]

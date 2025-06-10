@@ -26,8 +26,6 @@ agent:
     # Если ваше приложение всегда называется "current-time-app-0", используйте это:
     pod_name_passthrough = ["current-time-app-0"]
 
-
-
     # ИЛИ (предпочтительнее, если поды генерируются Deployment/StatefulSet с суффиксами)
     # Фильтрация по меткам пода.
     # Найдите метки вашего подов current-time-app:

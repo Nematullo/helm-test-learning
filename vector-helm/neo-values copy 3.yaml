@@ -1,0 +1,151 @@
+agent:
+  # ... ваши текущие настройки config, resources, service ...
+
+  # Обязательно: Установите тип развертывания как DaemonSet
+  # В официальном чарте Vector это обычно так:
+  kind: DaemonSet # <-- Добавьте/измените эту строку!
+  # Или, если чарт использует булевы флаги:
+   daemonset:
+     enabled: true
+   deployment:
+     enabled: false # Если DaemonSet enabled, Deployment должен быть disabled 
+
+
+  config: |
+    # Источник: Сбор логов stdout/stderr ТОЛЬКО для приложения current-time-app
+    [sources.kubernetes_current_time_app_logs]
+    type = "kubernetes_logs"
+    exclude_paths_glob_patterns = ["/var/log/pods/*/vector/*.log"]
+    # Для `kubernetes_logs` настоятельно рекомендуется включить `add_metadata`,
+    # даже если вы не хотите ее выводить, это поможет Vector'у лучше парсить.
+    # Но если вы хотите АБСОЛЮТНО без преобразований, то оставляем как есть.
+    # Важно: `pod_name_passthrough` - это устаревший параметр.
+    # Современный способ фильтрации прямо в источнике `kubernetes_logs` - это `pod_labels` или `namespaces`.
+    # Если ваше приложение current-time-app-0 имеет label 'app: current-time-app', используйте это:
+    # pod_labels = { "app" = "current-time-app" }
+    # Или, если оно всегда называется "current-time-app-0" и вы хотите рискнуть на устаревший параметр:
+    # (СТРОКА 'pod_name_passthrough' ПОЛНОСТЬЮ УДАЛЕНА ИЗ ФАЙЛА)
+    # Если вы хотите собирать логи со всех подов, но потом фильтровать, удалите строку выше
+
+
+    # Вместо pod_fields используем extra_field_selector для фильтрации по имени пода
+    # ВНИМАНИЕ: ЭТА СТРОКА ДОЛЖНА БЫТЬ С ТЕМ ЖЕ ОТСТУПОМ, ЧТО И exclude_paths_glob_patterns !
+    extra_field_selector = "metadata.name=current-time-app-0" 
+
+
+    ### НАСТРАИВАЕМЫЙ ФИЛЬТР МЕТАДАННЫХ KUBERNETES ###
+    #
+    # Эта трансформация `remap` позволяет вам ВЫБИРАТЕЛЬНО удалять метаданные из логов
+    # с помощью Vector Remap Language (VRL).
+    # Для удаления поля используйте команду `del(.path.to.field)`.
+    #
+    [transforms.customize_kube_metadata]
+    type = "remap" # <--- ИЗМЕНЕНО НА "remap"
+    inputs = ["kubernetes_current_time_app_logs"] # Берем логи от источника Kubernetes
+    source = '''
+      # Удаляемые поля (раскомментируйте строку, чтобы удалить)
+      del(.kubernetes.container_image) # Удаляем имя образа контейнера
+      del(.kubernetes.pod_node_name)   # Удаляем имя узла пода
+      del(.kubernetes.pod_owner)       # Удаляем владельца пода
+      del(.kubernetes.pod_labels)      # Удаляем метки пода
+      del(.kubernetes.namespace_labels) # Удаляем метки неймспейса
+      del(.kubernetes.node_labels)     # Удаляем метки узла
+
+      # Дополнительные метаданные, которые вы хотели удалить ранее
+      del(.file)                      # Удаляем путь к файлу лога
+      del(.kubernetes.container_id)   # Удаляем длинный идентификатор контейнера
+      del(.kubernetes.container_image_id) # Удаляем длинный идентификатор образа
+      del(.kubernetes.pod_ip)         # Удаляем IP-адрес пода
+      del(.kubernetes.pod_ips)        # Удаляем список IP-адресов пода
+      del(.kubernetes.pod_uid)        # Удаляем уникальный ID пода (UUID)
+
+            # Поля, которые вы хотели ОСТАВИТЬ, здесь не нужно удалять
+      # (т.е., они не перечислены с 'del()')
+      # kubernetes.container_name
+      # kubernetes.pod_name
+      # kubernetes.pod_namespace
+    ''' # <--- СКРИПТ VRL ЗАВЕРШАЕТСЯ ЭТИМИ ТРЕМЯ КАВЫЧКАМИ
+
+    # Этот remap убедится, что .timestamp — всегда текущий.
+    # Если лог не содержит временной метки или она не монотонна, Loki может выбрасывать ошибку.
+    # Пример ниже: принудительно задаём время события как текущее (UTC).
+    [transforms.force_timestamp]
+    type = "remap"
+    inputs = ["customize_kube_metadata"]
+    source = '''
+    .timestamp = now()
+    '''
+
+    # Sink: отправка логов в Loki
+    [sinks.loki_from_ks8_current-time]
+    type = "loki"
+    inputs = ["force_timestamp"] # <--- Вход теперь от НОВОЙ трансформации!
+    endpoint = "http://loki.argocd.svc.cluster.local:3100"
+    encoding.codec = "json"
+
+    healthcheck.enabled = false
+    healthcheck.uri = "http://loki.argocd.svc.cluster.local:3100/ready"
+
+    [sinks.loki_from_ks8_current-time.labels]
+    job = "current-time"
+    application = "current-time-app"
+    instance = "{{ kubernetes.pod_name }}" # <-- ИЗМЕНЕНО: используем имя пода приложения для уникальности
+
+    # Sink: Вывод логов stdout/stderr приложения в stdout Vector'а БЕЗ ДОБАВЛЕНИЯ МЕТАДАННЫХ
+    [sinks.console_kubernetes_current_time_app_logs]
+    type = "console"
+    inputs = ["force_timestamp"]
+    encoding.codec = "json" # Вывод в JSON для удобства чтения
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 528Mi
+    requests:
+      cpu: 500m
+      memory: 564Mi
+
+  service:
+    enabled: true
+    type: NodePort
+    port: 8686
+    targetPort: 8686
+    nodePort: 30101
+
+  # Монтирование hostPath в контейнер Vector'а
+  # Это позволяет Vector'у получить доступ к файловой системе хоста
+  volumes:
+  - name: current-time-app-logs-host
+    hostPath:
+      path: /var/log/k8s-apps/current-time-app-logs # Путь на хосте, где лежат логи приложения
+      type: DirectoryOrCreate # Создать директорию, если она не существует
+  # Дополнительные монтирования, которые вы добавили (для стандартных логов K8s)
+  # Они не используются в текущей конфигурации Vector'а (source type "file")
+  # но могут быть полезны, если вы захотите добавить source type "kubernetes_logs"
+  - name: varlogpods
+    hostPath:
+      path: /var/log/pods
+      type: Directory
+  - name: varlogcontainers
+    hostPath:
+      path: /var/log/containers
+      type: Directory
+  - name: varlibdockercontainers
+    hostPath:
+      path: /var/lib/docker/containers
+      type: Directory
+
+
+  volumeMounts:
+  - name: current-time-app-logs-host
+    mountPath: /var/log/k8s-apps/current-time-app-logs # Путь внутри контейнера Vector'а
+    readOnly: true
+  - name: varlogpods
+    mountPath: /var/log/pods
+    readOnly: true
+  - name: varlogcontainers
+    mountPath: /var/log/containers
+    readOnly: true
+  - name: varlibdockercontainers
+    mountPath: /var/lib/docker/containers
+    readOnly: true

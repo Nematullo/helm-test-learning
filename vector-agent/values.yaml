@@ -407,10 +407,6 @@ transforms: {}
 # Sinks to add to the generated `vector` config.
 # DEPRECATED. Use customConfig instead
 sinks: {}
-  stdout:
-    type: console
-    inputs: ["kubernetes_logs"]
-    encoding: json
   # sink_name:
   #   type: "sink_type"
   #   inputs: ["input1", "input2"]

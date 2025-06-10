@@ -251,8 +251,9 @@ loki:
 # -- Uncomment to configure each storage individually
 #   azure: {} 
 #   gcs: {} 
-   s3: http://minio-mon.argocd.svc.cluster.local:9000/loki
-   s3forcepathstyle: true
+    s3: 
+      endpoint: "http://minio-mon.argocd.svc.cluster.local:9000"
+      s3forcepathstyle: true
 #   boltdb: {}
 
   # -- Structured loki configuration, takes precedence over `loki.config`, `loki.schemaConfig`, `loki.storageConfig`

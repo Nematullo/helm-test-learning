@@ -80,11 +80,11 @@ data:
     [sinks.loki_from_ks8_current-time]
     type = "loki"
     inputs = ["force_timestamp"] # <--- Вход теперь от НОВОЙ трансформации!
-    endpoint = "http://loki-dist.argocd.svc.cluster.local:3100"
+    endpoint = "http://loki-dist-loki-distributed-distributor.argocd.svc.cluster.local:3100"
     encoding.codec = "json"
 
     healthcheck.enabled = false
-    healthcheck.uri = "http://loki-dist.argocd.svc.cluster.local:3100/ready"
+    healthcheck.uri = "http://loki-dist-loki-distributed-distributor.local:3100/ready"
 
     [sinks.loki_from_ks8_current-time.labels]
     job = "current-time"

@@ -41,3 +41,16 @@ subjects:
   - kind: ServiceAccount
     name: vector-agent # Ссылка на ServiceAccount выше
     namespace: argocd   # Неймспейс ServiceAccount 
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: mon
+  namespace: argocd
+spec:
+  clusterResourceWhitelist:
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding

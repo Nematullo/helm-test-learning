@@ -194,7 +194,7 @@ psp:
 
 # Set this to non-empty value to use existing `ConfigMap` for `vector`, instead
 # of using a generated one.
-existingConfigMap: ".configmap.yaml"
+existingConfigMap: ""
 
 # Specify custom contents for the Vector config
 # ref: https://vector.dev/docs/reference/configuration/

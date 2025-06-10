@@ -1,15 +1,15 @@
+# kubernetes-vector-agent/rbac.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: vector-agent
-  namespace: argocd
+  name: vector-agent # Имя ServiceAccount
+  namespace: argocd   # Неймспейс, где будет развернут Vector
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role # <-- Заменили ClusterRole на Role
+kind: ClusterRole # <-- Кластерная роль
 metadata:
-  name: vector-agent-role # Изменили имя для ясности
-  namespace: argocd      # Указали пространство имен
+  name: vector-agent # Имя ClusterRole
 rules:
   - apiGroups: [""]
     resources:
@@ -21,24 +21,23 @@ rules:
       - "get"
       - "list"
       - "watch"
-  - apiGroups: ["extensions"]
+  - apiGroups: ["extensions"] # Для DaemonSets в старых версиях
     resources: ["daemonsets"]
     verbs: ["get"]
-  - apiGroups: ["apps"]
+  - apiGroups: ["apps"]       # Для DaemonSets в новых версиях
     resources: ["daemonsets"]
     verbs: ["get"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding # <-- Заменили ClusterRoleBinding на RoleBinding
+kind: ClusterRoleBinding # <-- Кластерная привязка
 metadata:
-  name: vector-agent-rolebinding # Изменили имя для ясности
-  namespace: argocd           # Указали пространство имен
+  name: vector-agent # Имя ClusterRoleBinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role # <-- Ссылка на Role, а не ClusterRole
-  name: vector-agent-role # Ссылка на Role выше
+  kind: ClusterRole
+  name: vector-agent # Ссылка на ClusterRole выше
 subjects:
   - kind: ServiceAccount
-    name: vector-agent
-    namespace: argocd
+    name: vector-agent # Ссылка на ServiceAccount выше
+    namespace: argocd   # Неймспейс ServiceAccount

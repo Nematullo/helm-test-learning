@@ -1,3 +1,5 @@
+role: "agent"
+
 agent:
   # ... ваши текущие настройки config, resources, service ...
 

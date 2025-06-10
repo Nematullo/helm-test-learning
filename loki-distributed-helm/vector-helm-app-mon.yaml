@@ -7,13 +7,12 @@ spec:
   project: default
 
   sources: 
-
   - repoURL: 'https://github.com/nematullo/helm-test-learning.git' # URL ВАШЕГО GIT-РЕПОЗИТОРИЯ
     targetRevision: HEAD         
     path: loki-distributed-helm
     helm: 
       valueFiles:
-        - values.yaml 
+        - neo-values.yaml 
 
     
 

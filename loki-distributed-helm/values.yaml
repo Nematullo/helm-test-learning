@@ -241,16 +241,18 @@ loki:
   # -- Check https://grafana.com/docs/loki/latest/configuration/#storage_config for more info on how to configure storages
   storageConfig:
     boltdb_shipper:
-      shared_store: filesystem
+      shared_store: s3
+      resync_interval: 5s
       active_index_directory: /var/loki/index
       cache_location: /var/loki/cache
       cache_ttl: 168h
     filesystem:
       directory: /var/loki/chunks
 # -- Uncomment to configure each storage individually
-#   azure: {}
-#   gcs: {}
-#   s3: {}
+#   azure: {} 
+#   gcs: {} 
+   s3: http://minio-mon.argocd.svc.cluster.local:9000/loki
+   s3forcepathstyle: true
 #   boltdb: {}
 
   # -- Structured loki configuration, takes precedence over `loki.config`, `loki.schemaConfig`, `loki.storageConfig`

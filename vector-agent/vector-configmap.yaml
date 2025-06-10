@@ -80,7 +80,7 @@ data:
     [sinks.loki_from_ks8_current-time]
     type = "loki"
     inputs = ["force_timestamp"] # <--- Вход теперь от НОВОЙ трансформации!
-    endpoint = "http://loki.argocd.svc.cluster.local:3100"
+    endpoint = "http://loki-dist.argocd.svc.cluster.local:3100"
     encoding.codec = "json"
 
     healthcheck.enabled = false

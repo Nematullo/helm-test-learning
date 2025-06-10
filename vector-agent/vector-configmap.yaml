@@ -82,7 +82,7 @@ data:
     inputs = ["force_timestamp"] # <--- Вход теперь от НОВОЙ трансформации!
     endpoint = "http://loki-dist-loki-distributed-distributor.argocd.svc.cluster.local:3100"
     encoding.codec = "json"
-    timestamp_key = "timestamp"        # <== важно
+    
 
     healthcheck.enabled = false
     healthcheck.uri = "http://loki-dist-loki-distributed-distributor.local:3100/ready"

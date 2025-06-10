@@ -230,7 +230,7 @@ gossipPortName: gossip
 ##
 service:
   enabled: true
-  type: nodePort
+  type: clusterIP
   # Set the ip family policy to configure dual-stack see [Configure dual-stack](https://kubernetes.io/docs/concepts/services-networking/dual-stack/#services)
   ipFamilyPolicy: ""
   # Sets the families that should be supported and the order in which they should be applied to ClusterIP as well. Can be IPv4 and/or IPv6.
@@ -240,7 +240,7 @@ service:
   loadBalancerSourceRanges: []
   port: 80
   targetPort: 3000
-  nodePort: 30120
+  #nodePort: 30120
     # targetPort: 4181 To be used with a proxy extraContainer
   ## Service annotations. Can be templated.
   annotations: {}

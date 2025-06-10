@@ -7,7 +7,7 @@ metadata:
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
+kind: ClusterRole # <-- Кластерная роль
 metadata:
   name: vector-agent # Имя ClusterRole
 rules:
@@ -21,16 +21,16 @@ rules:
       - "get"
       - "list"
       - "watch"
-  - apiGroups: ["extensions"]
+  - apiGroups: ["extensions"] # Для DaemonSets в старых версиях
     resources: ["daemonsets"]
     verbs: ["get"]
-  - apiGroups: ["apps"]
+  - apiGroups: ["apps"]       # Для DaemonSets в новых версиях
     resources: ["daemonsets"]
     verbs: ["get"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+kind: ClusterRoleBinding # <-- Кластерная привязка
 metadata:
   name: vector-agent # Имя ClusterRoleBinding
 roleRef:
@@ -40,4 +40,22 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: vector-agent # Ссылка на ServiceAccount выше
-    namespace: argocd   # Неймспейс ServiceAccount
+    namespace: argocd   # Неймспейс ServiceAccount 
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: mon
+  namespace: argocd
+spec:
+  clusterResourceWhitelist:
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+  destinations:
+    - namespace: '*'
+      server: https://kubernetes.default.svc
+  sourceRepos:
+    - '*'

@@ -24,7 +24,7 @@ customConfig:
       type: console
       inputs: ["kubernetes_logs"]
       encoding: json
-    console_kubernetes_current_time_app_logs&:
+    console_kubernetes_current_time_app_logs:
       type: console
       inputs: ["kubernetes_logs"]
       encoding: json    

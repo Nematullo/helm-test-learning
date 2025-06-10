@@ -11,11 +11,11 @@ spec:
   - repoURL: 'https://github.com/nematullo/helm-test-learning.git' # URL ВАШЕГО GIT-РЕПОЗИТОРИЯ
     targetRevision: HEAD         
     path: vector-agent      
+    helm: 
+      valueFiles:
+        - values.yaml 
 
     
-  helm: 
-    valueFiles:
-      - values.yaml 
 
   destination:
     server: 'https://kubernetes.default.svc'

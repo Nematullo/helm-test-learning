@@ -1,0 +1,125 @@
+agent:
+  # ... ваши текущие настройки config, resources, service ...
+
+  # Обязательно: Установите тип развертывания как DaemonSet
+  # В официальном чарте Vector это обычно так:
+  kind: DaemonSet # <-- Добавьте/измените эту строку!
+  # Или, если чарт использует булевы флаги:
+   daemonset:
+     enabled: true
+   deployment:
+     enabled: false # Если DaemonSet enabled, Deployment должен быть disabled 
+
+
+  config: |
+    # Источник: чтение логов из конкретной директории на хосте
+    # Убедитесь, что приложение current-time-app действительно пишет логи сюда
+    [sources.current_time_logs_file]
+    type = "file"
+    include = ["/var/log/k8s-apps/current-time-app-logs/*.log"] # Путь, куда монтируется hostPath
+    ignore_older = 86400 # Игнорировать файлы старше 24 часов (24 * 60 * 60)
+
+    # НОВЫЙ ИСТОЧНИК: Сбор логов stdout/stderr ТОЛЬКО для приложения current-time-app
+    [sources.kubernetes_current_time_app_logs]
+    type = "kubernetes_logs"
+    # Фильтрация по имени пода (если имя статично, например, "current-time-app-0")
+    # Если ваше приложение всегда называется "current-time-app-0", используйте это:
+    pod_name_passthrough = ["current-time-app-0"]
+
+
+
+    # ИЛИ (предпочтительнее, если поды генерируются Deployment/StatefulSet с суффиксами)
+    # Фильтрация по меткам пода.
+    # Найдите метки вашего подов current-time-app:
+    # kubectl get pod current-time-app-0 -o yaml | grep labels -A 5
+    # Например, если у него есть метка "app: current-time-app"
+    # pod_labels = { "app" = "current-time-app" }
+
+    # Если вы хотите фильтровать по неймспейсу
+    # namespace = "default" # Или ваш неймспейс
+
+    # Исключаем логи самого Vector, чтобы избежать бесконечного цикла
+    exclude_paths = ["/var/log/pods/*/vector/*.log"]
+
+    # Sink: отправка логов в Loki
+    [sinks.loki]
+    type = "loki"
+    inputs = ["current_time_logs_file"] # Используем логи из нашего файлового источника
+    endpoint = "http://loki-mon.argocd.svc.cluster.local:3100/loki/api/v1/push"
+    encoding.codec = "json" # Loki предпочитает JSON, но может принимать и другие форматы
+
+    [sinks.loki.labels]
+    job = "current-time"
+    # Добавьте дополнительные статические метки, если нужно, например:
+    # app_name = "current-time-app"
+    # namespace = "default" # Или ваш неймспейс
+
+    # Sink: вывод логов в stdout Vector'а
+    [sinks.console]
+    type = "console"
+    inputs = ["current_time_logs_file"] # Используем логи из нашего файлового источника
+    encoding.codec = "json" # Вывод в JSON для удобства чтения
+
+    # Sink: Вывод отфильтрованных логов stdout/stderr приложения в stdout Vector'а БЕЗ ДОБАВЛЕНИЯ МЕТАДАННЫХ
+    [sinks.console_current_time_app_logs]
+    type = "console"
+    inputs = ["filter_current_time_app"] # Теперь получаем данные напрямую от фильтра
+    encoding.codec = "json" # Вывод в JSON для удобства чтения, но без дополнительных полей K8s
+
+    # Sink: Вывод логов stdout/stderr приложения в stdout Vector'а БЕЗ ДОБАВЛЕНИЯ МЕТАДАННЫХ
+    [sinks.console_kubernetes_current_time_app_logs] # Переименовал для ясности
+    type = "console"
+    inputs = ["kubernetes_current_time_app_logs"] # Теперь получаем данные напрямую из фильтрованного источника
+    encoding.codec = "json" # Вывод в JSON
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+  service:
+    enabled: true
+    type: NodePort
+    port: 8686
+    targetPort: 8686
+    nodePort: 30101
+
+  # Монтирование hostPath в контейнер Vector'а
+  # Это позволяет Vector'у получить доступ к файловой системе хоста
+  volumes:
+  - name: current-time-app-logs-host
+    hostPath:
+      path: /var/log/k8s-apps/current-time-app-logs # Путь на хосте, где лежат логи приложения
+      type: DirectoryOrCreate # Создать директорию, если она не существует
+  # Дополнительные монтирования, которые вы добавили (для стандартных логов K8s)
+  # Они не используются в текущей конфигурации Vector'а (source type "file")
+  # но могут быть полезны, если вы захотите добавить source type "kubernetes_logs"
+  - name: varlogpods
+    hostPath:
+      path: /var/log/pods
+      type: Directory
+  - name: varlogcontainers
+    hostPath:
+      path: /var/log/containers
+      type: Directory
+  - name: varlibdockercontainers
+    hostPath:
+      path: /var/lib/docker/containers
+      type: Directory
+
+  volumeMounts:
+  - name: current-time-app-logs-host
+    mountPath: /var/log/k8s-apps/current-time-app-logs # Путь внутри контейнера Vector'а
+    readOnly: true
+  - name: varlogpods
+    mountPath: /var/log/pods
+    readOnly: true
+  - name: varlogcontainers
+    mountPath: /var/log/containers
+    readOnly: true
+  - name: varlibdockercontainers
+    mountPath: /var/lib/docker/containers
+    readOnly: true

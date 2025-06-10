@@ -1,0 +1,15 @@
+apiVersion: v2
+appVersion: 0.19.3
+dependencies:
+- name: vector-shared
+  repository: https://helm.vector.dev
+  version: ~0.1.0
+deprecated: true
+description: A Helm chart to collect Kubernetes logs with Vector
+home: https://vector.dev/
+icon: https://vector.dev/press/vector-icon.svg
+name: vector-agent
+sources:
+- https://github.com/timberio/vector/
+type: application
+version: 0.21.3

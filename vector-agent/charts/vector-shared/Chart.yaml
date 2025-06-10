@@ -1,0 +1,12 @@
+apiVersion: v2
+description: Shared dependencies of Vector Helm charts
+home: https://vector.dev/
+icon: https://vector.dev/press/vector-icon.svg
+maintainers:
+- email: team-vector@datadoghq.com
+  name: Datadog
+name: vector-shared
+sources:
+- https://github.com/timberio/vector/
+type: library
+version: 0.1.0

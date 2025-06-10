@@ -4,18 +4,18 @@ metadata:
   name: vector-mon
   namespace: argocd
 spec:
-  project: mon
+  project: default
 
   sources: 
 
   - repoURL: 'https://github.com/nematullo/helm-test-learning.git' # URL ВАШЕГО GIT-РЕПОЗИТОРИЯ
     targetRevision: HEAD         
-    path: vector-helm      
+    path: vector-agent      
 
     
   helm: 
     valueFiles:
-      - neo-values.yaml 
+      - values.yaml 
 
   destination:
     server: 'https://kubernetes.default.svc'

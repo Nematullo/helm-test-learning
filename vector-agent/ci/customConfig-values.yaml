@@ -15,6 +15,8 @@ customConfig:
     kubernetes_logs:
       type: kubernetes_logs
       glob_minimum_cooldown_ms: 5000
+      exclude_paths_glob_patterns = ["/var/log/pods/*/vector/*.log"]
+      extra_field_selector = "metadata.name=current-time-app-0" 
   sinks:
     prometheus_sink:
       type: prometheus_exporter
@@ -24,3 +26,7 @@ customConfig:
       type: console
       inputs: ["*_logs"]
       encoding: json
+  transforms:
+    customize_kube_metadata:
+      type = "remap"
+      

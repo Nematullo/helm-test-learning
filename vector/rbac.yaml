@@ -40,4 +40,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: vector-agent # Ссылка на ServiceAccount выше
-    namespace: argocd   # Неймспейс ServiceAccount
+    namespace: argocd   # Неймспейс ServiceAccount 

@@ -26,11 +26,16 @@ data:
     # (СТРОКА 'pod_name_passthrough' ПОЛНОСТЬЮ УДАЛЕНА ИЗ ФАЙЛА)
     # Если вы хотите собирать логи со всех подов, но потом фильтровать, удалите строку выше
     exclude_paths_glob_patterns = ["/var/log/pods/*/vector/*.log"]
+    exclude_paths_glob_patterns = ["/var/log/pods/*/*/*.log"]
+    include = ["/var/log/pods/*/*/*.log"]
 
     # Вместо pod_fields используем extra_field_selector для фильтрации по имени пода
     # ВНИМАНИЕ: ЭТА СТРОКА ДОЛЖНА БЫТЬ С ТЕМ ЖЕ ОТСТУПОМ, ЧТО И exclude_paths_glob_patterns !
     extra_field_selector = "metadata.name=current-time-app-0" 
 
+    [sources.kube_logs]
+    type = "kubernetes_logs"
+    extra_field_selector = "metadata.name=argocdargocd-argo-cd-server"
 
     ### НАСТРАИВАЕМЫЙ ФИЛЬТР МЕТАДАННЫХ KUBERNETES ###
     #
@@ -91,6 +96,14 @@ data:
     job = "current-time"
     application = "current-time-app"
     instance = "{{ kubernetes.pod_name }}" # <-- ИЗМЕНЕНО: используем имя пода приложения для уникальности
+
+    [sinks.loki-argocd]
+    type = "loki"
+    inputs = ["kube_logs"]
+    endpoint = "http://loki-dist-loki-distributed-distributor.argocd.svc.cluster.local:3100"
+    encoding.codec = "json"
+    [sinks.loki-argocd.labels]
+    job = "argocd"
 
     # Sink: вывод логов из файла в stdout Vector'а
     #[sinks.console_from_file]

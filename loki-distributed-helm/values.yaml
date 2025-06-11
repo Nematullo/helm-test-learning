@@ -255,7 +255,8 @@ loki:
       s3: "loki"
       endpoint: "http://minio-mon.argocd.svc.cluster.local:9000"
       s3forcepathstyle: true
-      bucketnames: "loki"
+      bucket_name: "loki"
+      #bucketnames: "loki"
       #accessKey: "E2HmBZNvhqWsRJ9SQPmy"
       #secretKey: "nVdUSxskFUSxskFVvZNp9Yxen4mWH7X6L4gpld14CNRqoY"
       access_key_id: "AhvrSP4zLwUmqiNGKuNJ"

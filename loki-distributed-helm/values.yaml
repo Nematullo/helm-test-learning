@@ -241,7 +241,7 @@ loki:
   # -- Check https://grafana.com/docs/loki/latest/configuration/#storage_config for more info on how to configure storages
   storageConfig:
     boltdb_shipper:
-      shared_store: s3
+      shared_store: aws
       resync_interval: 5s
       active_index_directory: /var/loki/index
       cache_location: /var/loki/cache

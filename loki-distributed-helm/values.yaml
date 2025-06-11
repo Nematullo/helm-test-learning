@@ -257,7 +257,7 @@ loki:
       s3forcepathstyle: true
       bucketnames: "loki"
       #accessKey: "E2HmBZNvhqWsRJ9SQPmy"
-      #secretKey: "nVdUSxskFUSxskFVvZNp9Yxen4mWH7X6L4gpld14CNRqoY"
+      #secretKey: "nVdUSxskFVvZNp9Yxen4mWH7X6L4gpld14CNRqoY"
       #access_key_id: "4W0o0haKAUsLZHoguTCZ"
       #secret_access_key: "S6sBRrD1d4i1PsQwac4ft93REMIVstG0H8lCiNzC"
       access_key_id: "AhvrSP4zLwUmqiNGKuNJ"

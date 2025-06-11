@@ -252,7 +252,8 @@ loki:
 #   azure: {} 
 #   gcs: {} 
     aws:
-      s3: "http://minio-mon.argocd.svc.cluster.local:9000/loki"
+      s3: "loki"
+      endpoint: "http://minio-mon.argocd.svc.cluster.local:9000/loki"
       s3forcepathstyle: true
       #accessKey: "E2HmBZNvhqWsRJ9SQPmy"
       #secretKey: "nVdUSxskFUSxskFVvZNp9Yxen4mWH7X6L4gpld14CNRqoY"

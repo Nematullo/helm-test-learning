@@ -1372,7 +1372,7 @@ compactor:
   # -- Number of replicas for the compactor
   replicas: 1
   # -- Specifies whether compactor should be enabled
-  enabled: false
+  enabled: true
   # -- hostAliases to add
   hostAliases: []
   #  - ip: 1.2.3.4

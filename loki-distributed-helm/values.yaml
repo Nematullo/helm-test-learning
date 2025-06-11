@@ -232,7 +232,7 @@ loki:
     configs:
     - from: "2020-09-07"
       store: boltdb-shipper
-      object_store: filesystem
+      object_store: s3
       schema: v11
       index:
         prefix: loki_index_
@@ -253,6 +253,7 @@ loki:
 #   gcs: {} 
     s3:
       endpoint: "http://minio-mon.argocd.svc.cluster.local:9000/loki"
+      bucketnames: loki
       s3forcepathstyle: true
       accessKey: "E2HmBZNvhqWsRJ9SQPmy"
       secretKey: "nVdUSxskFUSxskFVvZNp9Yxen4mWH7X6L4gpld14CNRqoY"

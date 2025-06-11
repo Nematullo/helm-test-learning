@@ -251,7 +251,7 @@ loki:
 # -- Uncomment to configure each storage individually
 #   azure: {} 
 #   gcs: {} 
-    s3: 
+    s3:
       endpoint: "http://minio-mon.argocd.svc.cluster.local:9000/loki"
       s3forcepathstyle: true
       accessKey: "E2HmBZNvhqWsRJ9SQPmy"

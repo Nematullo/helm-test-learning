@@ -253,12 +253,13 @@ loki:
 #   gcs: {} 
     aws:
       s3: "loki"
-      endpoint: "http://minio-mon.argocd.svc.cluster.local:9000/loki"
+      endpoint: "http://minio-mon.argocd.svc.cluster.local:9000/"
       s3forcepathstyle: true
       #accessKey: "E2HmBZNvhqWsRJ9SQPmy"
       #secretKey: "nVdUSxskFUSxskFVvZNp9Yxen4mWH7X6L4gpld14CNRqoY"
       access_key_id: "E2HmBZNvhqWsRJ9SQPmy"
       secret_access_key: "nVdUSxskFUSxskFVvZNp9Yxen4mWH7X6L4gpld14CNRqoY"
+      region: us-east-1
 #   boltdb: {}
 
   # -- Structured loki configuration, takes precedence over `loki.config`, `loki.schemaConfig`, `loki.storageConfig`

@@ -257,8 +257,8 @@ loki:
       s3forcepathstyle: true
       #accessKey: "E2HmBZNvhqWsRJ9SQPmy"
       #secretKey: "nVdUSxskFUSxskFVvZNp9Yxen4mWH7X6L4gpld14CNRqoY"
-      access_key_id: "E2HmBZNvhqWsRJ9SQPmy"
-      secret_access_key: "nVdUSxskFUSxskFVvZNp9Yxen4mWH7X6L4gpld14CNRqoY"
+      access_key_id: "AhvrSP4zLwUmqiNGKuNJ"
+      secret_access_key: "AgMzEz4FKXkVCNuXENHc655olh3X0msJJdlrI7vi"
       region: us-east-1
 #   boltdb: {}
 

@@ -35,6 +35,7 @@ data:
     type = "kubernetes_logs"
     include = ["/var/log/pods/*/*/*.log"]
     exclude_paths_glob_patterns = ["/var/log/pods/*/vector/*.log"]
+    extra_field_selector = "metadata.name=argocd" 
 
     ### НАСТРАИВАЕМЫЙ ФИЛЬТР МЕТАДАННЫХ KUBERNETES ###
     #

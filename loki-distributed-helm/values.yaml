@@ -110,7 +110,7 @@ loki:
     memberlist:
       cluster_label: "{{ .Release.Name }}.{{ .Release.Namespace }}"
       join_members:
-        - {{ include "loki.fullname" . }}-memberlist
+        - {{ include "loki.fullname" . }}-memberlist.{{ .Release.Namespace }}.svc.cluster.local
 
     ingester_client:
       grpc_client_config:

@@ -1,21 +1,21 @@
-fullnameOverride: "PGSQL-GRAF"
+    fullnameOverride: "PGSQL-GRAF"
 
 
-architecture: "replication"
+    architecture: "replication"
 
-auth:
-  user: "user"
-  postgresPassword: "newPostgresPassword123"
-  password: "newUserPassword123"
-  replicationPassword: "newReplicationPassword123"
+    auth:
+      user: "user"
+      postgresPassword: "newPostgresPassword123"
+      password: "newUserPassword123"
+      replicationPassword: "newReplicationPassword123"
 
-passwordUpdateJob:
-  enabled: true
+    passwordUpdateJob:
+      enabled: true
 
-auth:
-  existingSecret: new-password-secret
+    auth:
+      existingSecret: new-password-secret
 
-passwordUpdateJob:
-  enabled: true
-  previousPasswords:
-    existingSecret: previous-password-secret
+    passwordUpdateJob:
+      enabled: true
+      previousPasswords:
+        existingSecret: previous-password-secret

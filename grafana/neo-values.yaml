@@ -5,6 +5,20 @@ service:
   targetPort: 3000
   nodePort: 30125
 
+adminUser: admin
+adminPassword: mysecurepassword
+
+persistence:
+  enabled: false
+
+database:
+  type: postgres
+  host: postgresql.monitoring.svc.cluster.local:5432
+  name: grafana
+  user: my-passport-1
+  password: my-passport-1
+  sslmode: disable
+
 #persistence:
 #  type: pvc
 #  enabled: true.

@@ -122,10 +122,10 @@ loki:
           kvstore:
             store: memberlist
           replication_factor: 1
-      chunk_idle_period: 1m
+      chunk_idle_period: 1m #тут
       chunk_block_size: 262144
       chunk_encoding: snappy
-      chunk_retain_period: 30s
+      chunk_retain_period: 30s #и тут поменял время
       max_transfer_retries: 0
       wal:
         dir: /var/loki/wal

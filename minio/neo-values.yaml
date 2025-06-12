@@ -29,10 +29,10 @@ auth:
 resources:
   requests:
     cpu: 100m # 100 миллиядер
-    memory: 128Mi # 128 мегабайт
+    memory: 256Mi # 128 мегабайт
   limits:
     cpu: 500m
-    memory: 512Mi
+    memory: 712Mi
 
 persistence:
   enabled: true

@@ -1,9 +1,61 @@
-  storage_config:
+    ingester_client:
+      grpc_client_config:
+        grpc_compression: gzip
+
+    ingester:
+      lifecycler:
+        ring:
+          kvstore:
+            store: memberlist
+          replication_factor: 1
+      chunk_idle_period: 1m #тут
+      chunk_block_size: 262144
+      chunk_encoding: snappy
+      chunk_retain_period: 30s #и тут поменял время
+      max_transfer_retries: 0
+      wal:
+        dir: /var/loki/wal
+
+    limits_config:
+      enforce_metric_name: false
+      reject_old_samples: true
+      reject_old_samples_max_age: 168h
+      max_cache_freshness_per_query: 10m
+      split_queries_by_interval: 15m
+
+
+  schemaConfig:
+    configs:
+    - from: "2020-09-07"
+      store: boltdb-shipper
+      object_store: aws
+      schema: v11
+      index:
+        prefix: loki_index_
+        period: 24h
+
+  # -- Check https://grafana.com/docs/loki/latest/configuration/#storage_config for more info on how to configure storages
+  storageConfig:
     boltdb_shipper:
-      active_index_directory: /loki/index
-      cache_location: /loki/index_cache
-      esync_interval: 5s
-      shared_store: s3
+      shared_store: aws
+      resync_interval: 5s
+      active_index_directory: /var/loki/index
+      cache_location: /var/loki/cache
+      cache_ttl: 168h
+    filesystem:
+      directory: /var/loki/chunks
+# -- Uncomment to configure each storage individually
+#   azure: {} 
+#   gcs: {} 
     aws:
-      s3: http://minio-mon.argocd.svc.cluster.local:9000/loki
+      s3: "loki"
+      endpoint: "http://minio-mon.argocd.svc.cluster.local:9000"
       s3forcepathstyle: true
+      bucketnames: "loki"
+      #accessKey: "E2HmBZNvhqWsRJ9SQPmy"
+      #secretKey: "nVdUSxskFVvZNp9Yxen4mWH7X6L4gpld14CNRqoY"
+      #access_key_id: "4W0o0haKAUsLZHoguTCZ"
+      #secret_access_key: "S6sBRrD1d4i1PsQwac4ft93REMIVstG0H8lCiNzC"
+      access_key_id: "AhvrSP4zLwUmqiNGKuNJ"
+      secret_access_key: "AgMzEz4FKXkVCNuXENHc655olh3X0msJJdlrI7vi"
+      region: us-east-1ы

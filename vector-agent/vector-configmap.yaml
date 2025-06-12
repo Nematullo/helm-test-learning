@@ -30,7 +30,9 @@ data:
     [sources.kube_logs_argocd]
     type = "kubernetes_logs"
     exclude_paths_glob_patterns = ["/var/log/pods/*/vector/*.log"]
-    extra_field_selector = "metadata.name=argocd" 
+    #extra_field_selector = "metadata.name=argocd"
+    pod_labels = { "app.kubernetes.io/part-of" = "argocd" }
+ 
 
 #################################################################################
 

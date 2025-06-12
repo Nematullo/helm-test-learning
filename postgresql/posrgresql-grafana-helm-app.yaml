@@ -10,7 +10,7 @@ spec:
 
   - repoURL: 'https://github.com/nematullo/helm-test-learning.git' # URL ВАШЕГО GIT-РЕПОЗИТОРИЯ
     targetRevision: HEAD         
-    path: grafana      
+    path: postgresql      
     helm: 
       valueFiles:
         - neo-values.yaml 

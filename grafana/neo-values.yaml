@@ -4,3 +4,11 @@ service:
   port: 80
   targetPort: 3000
   nodePort: 30125
+
+persistence:
+  type: pvc
+  enabled: true.
+  volumeName: ""
+  accessModes:
+    - ReadWriteOnce
+  size: 1Gi

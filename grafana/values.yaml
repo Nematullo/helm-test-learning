@@ -240,7 +240,7 @@ service:
   loadBalancerSourceRanges: []
   port: 80
   targetPort: 3000
-  nodePort: 30120
+  nodePort: ""
     # targetPort: 4181 To be used with a proxy extraContainer
   ## Service annotations. Can be templated.
   annotations: {}

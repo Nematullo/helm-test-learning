@@ -38,7 +38,7 @@ data:
 
 ############ - transforms - транфсормация логов - ###############################
 
-##### НАСТРАИВАЕМЫЙ ФИЛЬТР МЕТАДАННЫХ KUBERNETES ###
+##### НАСТРАИВАЕМЫЙ ФИЛЬТР МЕТАДАННЫХ KUBERNETES ################################
     #
     # Эта трансформация `remap` позволяет вам ВЫБИРАТЕЛЬНО удалять метаданные из логов
     # с помощью Vector Remap Language (VRL).
@@ -46,7 +46,9 @@ data:
 
     [transforms.customize_kube_metadata]
     type = "remap" # <--- ИЗМЕНЕНО НА "remap"
-    inputs = ["kubernetes_current_time_app_logs"] # Берем логи от источника Kubernetes
+    inputs = ["kubernetes_current_time_app_logs"
+
+    ] # Берем логи от источника Kubernetes
     source = '''
 ##### Удаляемые поля (раскомментируйте строку, чтобы удалить) ###################
       del(.kubernetes.container_image) # Удаляем имя образа контейнера

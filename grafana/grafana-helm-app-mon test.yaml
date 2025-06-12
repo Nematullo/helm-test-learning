@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: grafana
+  name: grafana-test
   namespace: argocd
 spec:
   project: default
@@ -13,7 +13,7 @@ spec:
     path: grafana      
     helm: 
       valueFiles:
-        - values.yaml 
+        - neo-values.yaml 
 
   destination:
     server: 'https://kubernetes.default.svc'

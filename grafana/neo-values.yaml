@@ -1,0 +1,6 @@
+service:
+  enabled: true
+  type: NodePort
+  port: 80
+  targetPort: 3000
+  nodePort: 30125

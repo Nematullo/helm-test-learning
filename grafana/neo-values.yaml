@@ -8,7 +8,7 @@ grafana:
         database: grafana
         user: grafana
         secureJsonData:
-          password: my-passport-1
+          password: grafana123
         jsonData:
           sslmode: disable
 

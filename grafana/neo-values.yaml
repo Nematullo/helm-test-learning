@@ -1,16 +1,3 @@
-grafana:
-  datasources:
-    enabled: true
-    datasources:
-      - name: PostgreSQL
-        type: postgres
-        url: posrgresql-grafana-postgresql:5432
-        database: grafana
-        user: grafana
-        secureJsonData:
-          password: grafana123
-        jsonData:
-          sslmode: disable
 
 service:
   enabled: true
@@ -29,8 +16,8 @@ database:
   type: postgres
   host: posrgresql-grafana-postgresql.monitoring.svc.cluster.local:5432
   name: grafana
-  user: my-passport-1
-  password: my-passport-1
+  user: grafana
+  password: grafana123
   sslmode: disable
 
 #persistence:

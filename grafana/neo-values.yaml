@@ -28,7 +28,7 @@ database:
 #    - ReadWriteOnce
 #  size: 1Gi
 
-#  type: statefulset
+#  type:  statefulset
 
   # Собственный volume с hostPath
 #  volumes:

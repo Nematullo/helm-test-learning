@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: posrgresql-grafana
+  namespace: argocd
+spec:
+  project: default
+
+  sources: 
+
+  - repoURL: 'https://github.com/nematullo/helm-test-learning.git' # URL ВАШЕГО GIT-РЕПОЗИТОРИЯ
+    targetRevision: HEAD         
+    path: grafana      
+    helm: 
+      valueFiles:
+        - neo-values.yaml 
+
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: argocd
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

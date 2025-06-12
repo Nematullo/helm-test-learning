@@ -12,3 +12,16 @@ persistence:
   accessModes:
     - ReadWriteOnce
   size: 1Gi
+
+#  type: statefulset
+
+  # Собственный volume с hostPath
+#  volumes:
+#    - name: grafana-storage
+#      hostPath:
+#        path: /home/neo/grafana-data
+#        type: DirectoryOrCreate
+
+#  mounts:
+#    - name: grafana-storage
+#      mountPath: /var/lib/grafana

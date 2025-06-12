@@ -1,4 +1,4 @@
-    fullnameOverride: "PGSQL-GRAF"
+fullnameOverride: "PGSQL-GRAF"
 
 
 architecture: "replication"

@@ -1,3 +1,17 @@
+grafana:
+  datasources:
+    enabled: true
+    datasources:
+      - name: PostgreSQL
+        type: postgres
+        url: posrgresql-grafana-postgresql:5432
+        database: grafana
+        user: grafana
+        secureJsonData:
+          password: my-passport-1
+        jsonData:
+          sslmode: disable
+
 service:
   enabled: true
   type: NodePort

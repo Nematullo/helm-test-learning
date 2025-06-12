@@ -1,1 +1,12 @@
 #    fullnameOverride: "PSQL-GRAF"
+
+    auth:
+      postgresPassword: "my-passport-1"
+      username: "my-passport-1"
+      password: "my-passport-1"
+      database: ""
+      existingSecret: "my-pass-1"
+      secretKeys:
+        adminPasswordKey: "my-passport-1"
+        userPasswordKey: "my-passport-1"
+        replicationPasswordKey: "my-passport-1"

@@ -13,7 +13,7 @@ persistence:
 
 database:
   type: postgres
-  host: postgresql.monitoring.svc.cluster.local:5432
+  host: posrgresql-grafana-postgresql.monitoring.svc.cluster.local:5432
   name: grafana
   user: my-passport-1
   password: my-passport-1

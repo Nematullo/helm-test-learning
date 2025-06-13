@@ -12,18 +12,17 @@ adminPassword: mysecurepassword
 persistence:
   enabled: false
 
-grafana.ini:
-  database:
-    type: postgres
-    host: "http://posrgresql-grafana-postgresql.monitoring.svc.cluster.local:5432"
-    name: grafana
-    user: grafana
-    password: grafana1234
-    sslmode: disable
+database:
+  type: postgres
+  host: "http://posrgresql-grafana-postgresql.argocd.svc.cluster.local:5432"
+  name: grafana
+  user: grafana
+  password: grafana1234
+  sslmode: disable
 
 #persistence:
 #  type: pvc
-#  enabled: true
+#  enabled: true.
 #  volumeName: ""
 #  accessModes:
 #    - ReadWriteOnce

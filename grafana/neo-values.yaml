@@ -18,7 +18,7 @@ grafana.ini:
     host: "http://posrgresql-grafana-postgresql.monitoring.svc.cluster.local:5432"
     name: grafana
     user: grafana
-    password: grafana123
+    password: grafana1234
     sslmode: disable
 
 #persistence:

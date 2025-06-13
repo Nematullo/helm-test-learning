@@ -1,17 +1,4 @@
-global:
-  postgresql:
-#    fullnameOverride: "psql-graf"
-    auth:
-      postgresUser: postgres
-      postgresPassword: "admin123"
-      username: "grafana"
-      password: "grafana123"
-      database: "grafana"
-      existingSecret: ""
-      secretKeys:
-        adminPasswordKey: "postgres-password"
-        userPasswordKey: "password"
-        replicationPasswordKey: "replication-password"
+
 
 
 image:

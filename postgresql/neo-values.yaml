@@ -1,5 +1,6 @@
-#    fullnameOverride: "PSQL-GRAF"
-
+global:
+  postgresql:
+#    fullnameOverride: "psql-graf"
     auth:
       postgresUser: admin
       postgresPassword: "admin123"

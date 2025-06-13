@@ -2,7 +2,7 @@ global:
   postgresql:
 #    fullnameOverride: "psql-graf"
     auth:
-      postgresUser: admin
+      postgresUser: postgres
       postgresPassword: "admin123"
       username: "grafana"
       password: "grafana123"

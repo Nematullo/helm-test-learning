@@ -13,7 +13,7 @@ auth:
   enablePostgresUser: true
   postgresPassword: "admin123"
   username: "grafana"
-  password: "grafana123"
+  password: "grafana1234"
   database: "grafana"
   replicationUsername: repl_user
   replicationPassword: ""

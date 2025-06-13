@@ -12,3 +12,34 @@ global:
         adminPasswordKey: "postgres-password"
         userPasswordKey: "password"
         replicationPasswordKey: "replication-password"
+
+
+image:
+  registry: docker.io
+  repository: bitnami/postgresql
+  tag: 17.5.0-debian-12-r11
+  digest: ""
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+  debug: false
+auth:
+  enablePostgresUser: true
+  postgresPassword: "admin123"
+  username: "grafana"
+  password: "grafana123"
+  database: "grafana"
+  replicationUsername: repl_user
+  replicationPassword: ""
+  existingSecret: ""
+  secretKeys:
+    adminPasswordKey: postgres-password
+    userPasswordKey: password
+    replicationPasswordKey: replication-password
+  usePasswordFiles: true
+architecture: standalone
+replication:
+  synchronousCommit: "off"
+  numSynchronousReplicas: 0
+  applicationName: my_application
+containerPorts:
+  postgresql: 5432

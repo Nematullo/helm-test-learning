@@ -14,7 +14,7 @@ persistence:
 
 database:
   type: postgres
-  host: posrgresql-grafana-postgresql.monitoring.svc.cluster.local:5432
+  host: "http://posrgresql-grafana-postgresql.monitoring.svc.cluster.local:5432"
   name: grafana
   user: grafana
   password: grafana123

@@ -18,6 +18,9 @@ grafana:
     plugins: /var/lib/grafana/plugins
     provisioning: /etc/grafana/provisioning
   grafana.ini: |
+    [server]
+    domain = ''
+    root_url = http://localhost:30125
     [database]
     type = postgres
     host = postgresql-grafana.argocd.svc.cluster.local:5432
@@ -29,6 +32,11 @@ grafana:
     max_idle_conn = 100
     conn_max_lifetime = 14400
     log_queries = true
+    [paths]
+    data = /var/lib/grafana/
+    logs = /var/log/grafana
+    plugins = /var/lib/grafana/plugins
+    provisioning = /etc/grafana/provisioning
   config:
     database:
       type: postgres

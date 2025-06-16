@@ -1,3 +1,6 @@
+  adminUser: admin
+  adminPassword: mysecurepassword
+  
 grafana:
   service:
     enabled: true
@@ -5,8 +8,7 @@ grafana:
     port: 80
     targetPort: 3000
     nodePort: 30125
-  adminUser: admin
-  adminPassword: mysecurepassword
+
   persistence:
     enabled: false
   grafana.ini:

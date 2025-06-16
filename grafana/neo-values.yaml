@@ -17,32 +17,37 @@ grafana:
     logs: /var/log/grafana
     plugins: /var/lib/grafana/plugins
     provisioning: /etc/grafana/provisioning
-  grafana.ini:
-    server:
-      domain: ''
-      root_url: http://localhost:30125
-    database:
-      type: postgres
-      host: postgresql-grafana.argocd.svc.cluster.local:5432
-      name: grafana
-      user: grafana
-      password: grafana1234
-      ssl_mode: disable
-      max_open_conn: 100
-      max_idle_conn: 100
-      conn_max_lifetime: 14400
-      log_queries: true
-    paths:
-      data: /var/lib/grafana/
-      logs: /var/log/grafana
-      plugins: /var/lib/grafana/plugins
-      provisioning: /etc/grafana/provisioning
-    analytics:
-      check_for_updates: true
-    log:
-      mode: console
-    grafana_net:
-      url: https://grafana.net
+  grafana.ini: |
+    [server]
+    domain = ''
+    root_url = http://localhost:30125
+
+    [database]
+    type = postgres
+    host = postgresql-grafana.argocd.svc.cluster.local:5432
+    name = grafana
+    user = grafana
+    password = grafana1234
+    ssl_mode = disable
+    max_open_conn = 100
+    max_idle_conn = 100
+    conn_max_lifetime = 14400
+    log_queries = true
+
+    [paths]
+    data = /var/lib/grafana/
+    logs = /var/log/grafana
+    plugins = /var/lib/grafana/plugins
+    provisioning = /etc/grafana/provisioning
+
+    [analytics]
+    check_for_updates = true
+
+    [log]
+    mode = console
+
+    [grafana_net]
+    url = https://grafana.net
 
 #persistence:
 #  type: pvc

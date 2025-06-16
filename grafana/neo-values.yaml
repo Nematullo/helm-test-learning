@@ -17,21 +17,25 @@ grafana:
     logs: /var/log/grafana
     plugins: /var/lib/grafana/plugins
     provisioning: /etc/grafana/provisioning
-  env:
-    GF_DATABASE_PASSWORD: grafana1234
-
-grafana.ini:
-  database:
-    type: postgres
-    host: postgresql-grafana.argocd.svc.cluster.local:5432
-    name: grafana
-    user: grafana
-    password: $__env{GF_DATABASE_PASSWORD}
-    ssl_mode: disable
-    max_open_conn: 100
-    max_idle_conn: 100
-    conn_max_lifetime: 14400
-    log_queries: true
+  grafana.ini:
+    database:
+      type: postgres
+      host: postgresql-grafana.argocd.svc.cluster.local:5432
+      name: grafana
+      user: grafana
+      password: ${GRAFANA_DB_PASSWORD}
+  extraSecretMounts:
+    - name: grafana-db-secret
+      secretName: grafana-db-secret
+      defaultMode: 0440
+      mountPath: /etc/grafana/secrets
+      readOnly: true
+  extraEnv:
+    GRAFANA_DB_PASSWORD:
+      valueFrom:
+        secretKeyRef:
+          name: grafana-db-secret
+          key: password
 
 #persistence:
 #  type: pvc

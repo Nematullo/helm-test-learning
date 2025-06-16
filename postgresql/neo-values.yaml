@@ -10,7 +10,7 @@ auth:
   enablePostgresUser: true
   postgresPassword: "admin123"
   username: "grafana"
-  password: "grafana1234"  тут поменял синхронизация пошла
+  password: "grafana1234"  # тут поменял синхронизация пошла
   database: "grafana"
   replicationUsername: repl_user
   replicationPassword: ""

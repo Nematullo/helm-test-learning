@@ -48,7 +48,10 @@ grafana:
     provisioning: /etc/grafana/provisioning
   env:
     GRAFANA_DATABASE_PASSWORD:
-      value: ${GRAFANA_DATABASE_PASSWORD}
+      valueFrom:
+        secretKeyRef:
+          name: grafana-database
+          key: password
   extraSecretMounts: []
 
 #persistence:

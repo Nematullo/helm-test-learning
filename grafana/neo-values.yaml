@@ -10,25 +10,24 @@ grafana:
     nodePort: 30125
   persistence:
     enabled: false
-  grafana\.ini:
-    database:
-      type: postgres
-      host: postgresql-grafana-postgresql.argocd.svc.cluster.local:5432
-      name: grafana
-      user: grafana
-      password: grafana1234
-      ssl_mode: disable
-      max_open_conn: 100
-      max_idle_conn: 100
-      conn_max_lifetime: 14400
-      log_queries: true
-    server:
-      root_url: http://localhost:30125
-    paths:
-      data: /var/lib/grafana/
-      logs: /var/log/grafana
-      plugins: /var/lib/grafana/plugins
-      provisioning: /etc/grafana/provisioning
+  database:
+    type: postgres
+    host: postgresql-grafana-postgresql.argocd.svc.cluster.local:5432
+    name: grafana
+    user: grafana
+    password: grafana1234
+    ssl_mode: disable
+    max_open_conn: 100
+    max_idle_conn: 100
+    conn_max_lifetime: 14400
+    log_queries: true
+  server:
+    root_url: http://localhost:30125
+  paths:
+    data: /var/lib/grafana/
+    logs: /var/log/grafana
+    plugins: /var/lib/grafana/plugins
+    provisioning: /etc/grafana/provisioning
 
 #persistence:
 #  type: pvc

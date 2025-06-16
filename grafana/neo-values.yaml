@@ -1,6 +1,3 @@
-  adminUser: admin
-  adminPassword: mysecurepassword
-  
 grafana:
   service:
     enabled: true
@@ -8,10 +5,8 @@ grafana:
     port: 80
     targetPort: 3000
     nodePort: 30125
-
   persistence:
     enabled: false
-
   grafana.ini:
     database:
       type: postgres

@@ -1,3 +1,5 @@
+createConfigmap: true
+
 adminUser: admin
 adminPassword: mysecurepassword
 

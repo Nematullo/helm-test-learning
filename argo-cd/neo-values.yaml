@@ -84,6 +84,10 @@ dex:
   redis:
     password: "9xkVqH6fzD3YvTz1"
 
+
+#redisWait:
+#  enabled: false
+
 #redis:
 #  auth:
 #    existingSecret: argocd-redis

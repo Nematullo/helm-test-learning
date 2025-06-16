@@ -7,16 +7,6 @@ grafana.ini:
   server:
     domain: ''
     root_url: http://localhost:30125
-  database:
-    type: postgres
-    host: postgresql-grafana.argocd.svc.cluster.local:5432
-    name: grafana
-    user: grafana
-    ssl_mode: disable
-    max_open_conn: 100
-    max_idle_conn: 100
-    conn_max_lifetime: 14400
-    log_queries: true
   paths:
     data: /var/lib/grafana/
     logs: /var/log/grafana
@@ -46,11 +36,11 @@ grafana:
     plugins: /var/lib/grafana/plugins
     provisioning: /etc/grafana/provisioning
   env:
-    GF_DATABASE_PASSWORD: grafana1234
     GF_DATABASE_TYPE: postgres
     GF_DATABASE_HOST: postgresql-grafana.argocd.svc.cluster.local:5432
     GF_DATABASE_NAME: grafana
     GF_DATABASE_USER: grafana
+    GF_DATABASE_PASSWORD: grafana1234
     GF_DATABASE_SSL_MODE: disable
     GF_DATABASE_MAX_OPEN_CONN: "100"
     GF_DATABASE_MAX_IDLE_CONN: "100"

@@ -20,6 +20,7 @@ persistence:
       host: "http://posrgresql-grafana-postgresql.argocd.svc.cluster.local:5432"
       name: grafana
       user: grafana
+      
       password: grafana1234
       sslmode: disable
 

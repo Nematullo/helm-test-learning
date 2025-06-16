@@ -23,7 +23,12 @@ grafana:
       host: postgresql-grafana.argocd.svc.cluster.local:5432
       name: grafana
       user: grafana
-      password: ${GRAFANA_DB_PASSWORD}
+      password: grafana1234
+      ssl_mode: disable
+      max_open_conn: 100
+      max_idle_conn: 100
+      conn_max_lifetime: 14400
+      log_queries: true
   extraSecretMounts:
     - name: grafana-db-secret
       secretName: grafana-db-secret

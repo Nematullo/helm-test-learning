@@ -1,7 +1,6 @@
   adminUser: admin
   adminPassword: mysecurepassword
   
-grafana:
   service:
     enabled: true
     type: NodePort

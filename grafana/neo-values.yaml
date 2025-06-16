@@ -23,7 +23,7 @@ grafana.ini:
     host: postgresql-grafana.argocd.svc.cluster.local:5432
     name: grafana
     user: grafana
-    password: grafana1234
+    password: "grafana1234"
     ssl_mode: disable
     max_open_conn: 100
     max_idle_conn: 100

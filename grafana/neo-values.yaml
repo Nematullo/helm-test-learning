@@ -23,12 +23,12 @@
     conn_max_lifetime: 14400
     log_queries: true
 
-  grafana.ini:
-    server:
-      root_url: http://localhost:30125
-    security:
-      admin_user: admin
-      admin_password: mysecurepassword
+  #grafana.ini:
+  #  server:
+  #    root_url: http://localhost:30125
+  #  secur#ity:
+  #    admin_user: admin
+  #    admin_password: mysecurepassword
 
 #persistence:
 #  type: pvc

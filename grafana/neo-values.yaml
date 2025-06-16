@@ -1,3 +1,6 @@
+adminUser: admin
+adminPassword: mysecurepassword
+
 grafana:
   service:
     enabled: true
@@ -21,9 +24,6 @@ grafana:
       log_queries: true
     server:
       root_url: http://localhost:30125
-    security:
-      admin_user: admin
-      admin_password: mysecurepassword
     paths:
       data: /var/lib/grafana/
       logs: /var/log/grafana

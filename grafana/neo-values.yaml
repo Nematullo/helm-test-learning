@@ -46,20 +46,8 @@ grafana:
     logs: /var/log/grafana
     plugins: /var/lib/grafana/plugins
     provisioning: /etc/grafana/provisioning
-  env:
-    GRAFANA_DATABASE_PASSWORD:
-      valueFrom:
-        secretKeyRef:
-          name: grafana-database
-          key: password
-  extraSecretMounts:
-    - name: grafana-database
-      secretName: grafana-database
-      defaultMode: 0440
-      items:
-        - key: password
-          path: database-password
-      readOnly: true
+  env: {}
+  extraSecretMounts: []
 
 #persistence:
 #  type: pvc

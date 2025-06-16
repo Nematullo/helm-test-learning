@@ -17,7 +17,7 @@ grafana:
     logs: /var/log/grafana
     plugins: /var/lib/grafana/plugins
     provisioning: /etc/grafana/provisioning
-  extraEnv:
+  env:
     GF_DATABASE_TYPE: postgres
     GF_DATABASE_HOST: postgresql-grafana.argocd.svc.cluster.local:5432
     GF_DATABASE_NAME: grafana

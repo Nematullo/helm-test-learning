@@ -13,7 +13,7 @@ grafana:
   grafana.ini:
     database:
       type: postgres
-      host: posrgresql-grafana-postgresql.argocd.svc.cluster.local:5432
+      host: postgresql-grafana-postgresql.argocd.svc.cluster.local:5432
       name: grafana
       user: grafana
       password: grafana1234

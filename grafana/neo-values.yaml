@@ -1,26 +1,20 @@
 grafana:
-
-service:
-  enabled: true
-  type: NodePort
-  port: 80
-  targetPort: 3000
-  nodePort: 30125
-
-adminUser: admin
-adminPassword: mysecurepassword
-
-persistence:
-  enabled: false
-
-
-  grafana.ini:  
+  service:
+    enabled: true
+    type: NodePort
+    port: 80
+    targetPort: 3000
+    nodePort: 30125
+  adminUser: admin
+  adminPassword: mysecurepassword
+  persistence:
+    enabled: false
+  grafana.ini:
     database:
       type: postgres
-      host: "http://posrgresql-grafana-postgresql.argocd.svc.cluster.local:5432"
+      host: postgresql-grafana-postgresql.argocd.svc.cluster.local:5432
       name: grafana
       user: grafana
-      
       password: grafana1234
       sslmode: disable
 

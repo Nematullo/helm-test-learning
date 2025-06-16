@@ -13,7 +13,7 @@ spec:
     path: grafana      
     helm: 
       valueFiles:
-        - neo-values.yaml 
+        - /neo-values.yaml 
 
   destination:
     server: 'https://kubernetes.default.svc'

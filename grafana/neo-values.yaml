@@ -17,6 +17,18 @@ grafana:
     logs: /var/log/grafana
     plugins: /var/lib/grafana/plugins
     provisioning: /etc/grafana/provisioning
+  grafana.ini:
+    database:
+      type: postgres
+      host: postgresql-grafana.argocd.svc.cluster.local:5432
+      name: grafana
+      user: grafana
+      password: grafana1234
+      ssl_mode: disable
+      max_open_conn: 100
+      max_idle_conn: 100
+      conn_max_lifetime: 14400
+      log_queries: true
   config:
     database:
       type: postgres
@@ -40,18 +52,6 @@ grafana:
     GF_DATABASE_MAX_IDLE_CONN: "100"
     GF_DATABASE_CONN_MAX_LIFETIME: "14400"
     GF_DATABASE_LOG_QUERIES: "true"
-  grafana.ini:
-    database:
-      type: postgres
-      host: postgresql-grafana.argocd.svc.cluster.local:5432
-      name: grafana
-      user: grafana
-      password: grafana1234
-      ssl_mode: disable
-      max_open_conn: 100
-      max_idle_conn: 100
-      conn_max_lifetime: 14400
-      log_queries: true
   extraSecretMounts:
     - name: grafana-db-secret
       secretName: grafana-db-secret

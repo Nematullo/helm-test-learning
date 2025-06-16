@@ -22,7 +22,7 @@ grafana.ini:
     type: postgres
     host: postgresql-grafana.argocd.svc.cluster.local:5432
     name: grafana
-    user: grafan
+    user: grafana
     password: ${GRAFANA_DATABASE_PASSWORD}
     ssl_mode: disable
     max_open_conn: 100
@@ -53,7 +53,7 @@ grafana:
 #  type: pvc
 #  enabled: true.
 #  volumeName: ""
-#  accessModes:
+#  accessModes: 
 #    - ReadWriteOnce
 #  size: 1Gi
 

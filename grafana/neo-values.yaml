@@ -17,6 +17,17 @@ grafana:
     logs: /var/log/grafana
     plugins: /var/lib/grafana/plugins
     provisioning: /etc/grafana/provisioning
+  extraEnv:
+    GF_DATABASE_TYPE: postgres
+    GF_DATABASE_HOST: postgresql-grafana.argocd.svc.cluster.local:5432
+    GF_DATABASE_NAME: grafana
+    GF_DATABASE_USER: grafana
+    GF_DATABASE_PASSWORD: grafana1234
+    GF_DATABASE_SSL_MODE: disable
+    GF_DATABASE_MAX_OPEN_CONN: "100"
+    GF_DATABASE_MAX_IDLE_CONN: "100"
+    GF_DATABASE_CONN_MAX_LIFETIME: "14400"
+    GF_DATABASE_LOG_QUERIES: "true"
   grafana.ini:
     database:
       type: postgres

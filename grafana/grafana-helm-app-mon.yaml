@@ -10,10 +10,10 @@ spec:
 
   - repoURL: 'https://github.com/nematullo/helm-test-learning.git' # URL ВАШЕГО GIT-РЕПОЗИТОРИЯ
     targetRevision: HEAD         
-    path: grafana      
+    path: grafana
     helm: 
       valueFiles:
-        - /neo-values.yaml 
+        - neo-values.yaml 
 
   destination:
     server: 'https://kubernetes.default.svc'

@@ -1,0 +1,36 @@
+global:
+  enabled: true
+
+  injector:
+  # True if you want to enable vault agent injection.
+  # @default: global.enabled
+  enabled: "true"
+
+  replicas: 1
+
+  # Configures the port the injector should listen on
+  port: 8080
+
+  server:
+    enabled: "true"
+    image:
+      repository: "hashicorp/vault"
+      tag: "1.19.0"
+      # Overrides the default Image Pull Policy
+      pullPolicy: IfNotPresent
+      
+      service:
+      port: 8200
+      targetPort: 8200
+      
+    ingress:
+       enabled: false
+       labels: {}
+         # traffic: external
+       annotations: {}
+         # |
+         # kubernetes.io/ingress.class: nginx
+         # kubernetes.io/tls-acme: "true"
+         #   or
+         # kubernetes.io/ingress.class: nginx
+         # kubernetes.io/tls-acme: "true"
